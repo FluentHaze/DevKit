@@ -21,19 +21,6 @@ pnpm preview
 
 生产构建会为 39 个工具生成静态目录入口，直接访问或刷新工具地址均可使用，无需服务器 SPA rewrite。Web Crypto、剪贴板与 Service Worker 需要 HTTPS 或 localhost。
 
-## GitHub Pages
-
-推送 `main` 后，`.github/workflows/pages.yml` 使用 pnpm 检查、构建并部署到 `https://fluenthaze.github.io/DevKit/`。Pages 的发布源为 GitHub Actions。构建使用 `VITE_BASE_PATH=/DevKit/`，导航、图标、Worker 与离线缓存均按此子路径工作。
-
-本地复现 Pages 构建：
-
-```sh
-VITE_BASE_PATH=/DevKit/ pnpm build
-VITE_BASE_PATH=/DevKit/ pnpm preview
-```
-
-预览时访问终端地址下的 `/DevKit/`。不设置该变量时仍以根路径运行，适合普通静态托管。
-
 ## 已实现
 
 - 7 类、39 个独立工具路由，38 个转换/生成工具及 HTTP 离线速查；工具不是占位页面。
