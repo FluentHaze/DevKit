@@ -1,0 +1,392 @@
+[
+  {
+    "id": "json-formatter",
+    "slug": "json-formatter",
+    "category": "data",
+    "order": 0,
+    "titleKey": "tools.json-formatter.title",
+    "descriptionKey": "tools.json-formatter.description",
+    "keywords": ["JSON 格式化", "JSON Formatter", "json-formatter"],
+    "example": "{\"name\":\"DevKit\",\"version\":1,\"tools\":[\"JSON\",\"Base64\"],\"local\":true}"
+  },
+  {
+    "id": "json-escape",
+    "slug": "json-escape",
+    "category": "data",
+    "order": 1,
+    "titleKey": "tools.json-escape.title",
+    "descriptionKey": "tools.json-escape.description",
+    "keywords": ["JSON 转义", "JSON Escape", "json-escape"],
+    "example": "Hello \"DevKit\"\n你好 👋"
+  },
+  {
+    "id": "json-diff",
+    "slug": "json-diff",
+    "category": "data",
+    "order": 2,
+    "titleKey": "tools.json-diff.title",
+    "descriptionKey": "tools.json-diff.description",
+    "keywords": ["JSON 对比", "JSON Diff", "json-diff"],
+    "example": "{\"name\":\"DevKit\",\"version\":1,\"tags\":[\"local\"]}"
+  },
+  {
+    "id": "json-path",
+    "slug": "json-path",
+    "category": "data",
+    "order": 3,
+    "titleKey": "tools.json-path.title",
+    "descriptionKey": "tools.json-path.description",
+    "keywords": ["JSONPath 查询", "JSONPath Query", "json-path"],
+    "example": "{\"users\":[{\"name\":\"Ada\"},{\"name\":\"Lin\"}]}"
+  },
+  {
+    "id": "json-yaml",
+    "slug": "json-yaml",
+    "category": "data",
+    "order": 4,
+    "titleKey": "tools.json-yaml.title",
+    "descriptionKey": "tools.json-yaml.description",
+    "keywords": ["JSON ↔ YAML", "JSON ↔ YAML", "json-yaml"],
+    "example": "{\"name\":\"DevKit\",\"local\":true}"
+  },
+  {
+    "id": "json-csv",
+    "slug": "json-csv",
+    "category": "data",
+    "order": 5,
+    "titleKey": "tools.json-csv.title",
+    "descriptionKey": "tools.json-csv.description",
+    "keywords": ["JSON ↔ CSV", "JSON ↔ CSV", "json-csv"],
+    "example": "[{\"name\":\"Ada\",\"role\":\"Developer\"},{\"name\":\"Lin\",\"role\":\"Designer\"}]"
+  },
+  {
+    "id": "json-typescript",
+    "slug": "json-typescript",
+    "category": "data",
+    "order": 6,
+    "titleKey": "tools.json-typescript.title",
+    "descriptionKey": "tools.json-typescript.description",
+    "keywords": ["JSON → TypeScript", "JSON → TypeScript", "json-typescript"],
+    "example": "{\"name\":\"DevKit\",\"count\":39,\"tags\":[\"local\"],\"meta\":null}"
+  },
+  {
+    "id": "base64",
+    "slug": "base64",
+    "category": "crypto",
+    "order": 7,
+    "titleKey": "tools.base64.title",
+    "descriptionKey": "tools.base64.description",
+    "keywords": ["Base64", "Base64", "base64"],
+    "example": "Hello, 世界 👋"
+  },
+  {
+    "id": "url-codec",
+    "slug": "url-codec",
+    "category": "crypto",
+    "order": 8,
+    "titleKey": "tools.url-codec.title",
+    "descriptionKey": "tools.url-codec.description",
+    "keywords": ["URL 编解码", "URL Encode / Decode", "url-codec"],
+    "example": "Hello 世界 + & /"
+  },
+  {
+    "id": "unicode-html",
+    "slug": "unicode-html",
+    "category": "crypto",
+    "order": 9,
+    "titleKey": "tools.unicode-html.title",
+    "descriptionKey": "tools.unicode-html.description",
+    "keywords": ["Unicode / HTML 实体", "Unicode / HTML Entities", "unicode-html"],
+    "example": "<Hello> 世界 👋 & \"DevKit\""
+  },
+  {
+    "id": "hash",
+    "slug": "hash",
+    "category": "crypto",
+    "order": 10,
+    "titleKey": "tools.hash.title",
+    "descriptionKey": "tools.hash.description",
+    "keywords": ["哈希摘要", "Hash Digest", "hash"],
+    "example": "hello"
+  },
+  {
+    "id": "aes",
+    "slug": "aes",
+    "category": "crypto",
+    "order": 11,
+    "titleKey": "tools.aes.title",
+    "descriptionKey": "tools.aes.description",
+    "keywords": ["AES 加解密", "AES Encryption", "aes"],
+    "example": "Hello DevKit"
+  },
+  {
+    "id": "hmac",
+    "slug": "hmac",
+    "category": "crypto",
+    "order": 12,
+    "titleKey": "tools.hmac.title",
+    "descriptionKey": "tools.hmac.description",
+    "keywords": ["HMAC 签名", "HMAC Signature", "hmac"],
+    "example": "Hello DevKit"
+  },
+  {
+    "id": "jwt",
+    "slug": "jwt",
+    "category": "crypto",
+    "order": 13,
+    "titleKey": "tools.jwt.title",
+    "descriptionKey": "tools.jwt.description",
+    "keywords": ["JWT 解析", "JWT Decoder", "jwt"],
+    "example": "eyJhbGciOiJub25lIn0.eyJzdWIiOiJkZXZraXQiLCJpYXQiOjE3MDAwMDAwMDAsImV4cCI6MTczMDAwMDAwMH0."
+  },
+  {
+    "id": "timestamp",
+    "slug": "timestamp",
+    "category": "time",
+    "order": 14,
+    "titleKey": "tools.timestamp.title",
+    "descriptionKey": "tools.timestamp.description",
+    "keywords": ["时间戳转换", "Timestamp Converter", "timestamp"],
+    "example": "1700000000\n0\n-1"
+  },
+  {
+    "id": "timezone",
+    "slug": "timezone",
+    "category": "time",
+    "order": 15,
+    "titleKey": "tools.timezone.title",
+    "descriptionKey": "tools.timezone.description",
+    "keywords": ["时区转换", "Timezone Converter", "timezone"],
+    "example": "2026-10-28T09:00:00"
+  },
+  {
+    "id": "date-calculator",
+    "slug": "date-calculator",
+    "category": "time",
+    "order": 16,
+    "titleKey": "tools.date-calculator.title",
+    "descriptionKey": "tools.date-calculator.description",
+    "keywords": ["日期计算", "Date Calculator", "date-calculator"],
+    "example": "2026-10-28T09:00:00"
+  },
+  {
+    "id": "cron",
+    "slug": "cron",
+    "category": "time",
+    "order": 17,
+    "titleKey": "tools.cron.title",
+    "descriptionKey": "tools.cron.description",
+    "keywords": ["Cron 表达式", "Cron Expression", "cron"],
+    "example": "*/15 * * * *"
+  },
+  {
+    "id": "code-formatter",
+    "slug": "code-formatter",
+    "category": "text",
+    "order": 18,
+    "titleKey": "tools.code-formatter.title",
+    "descriptionKey": "tools.code-formatter.description",
+    "keywords": ["代码格式化", "Code Formatter", "code-formatter"],
+    "example": "const greeting={name:\"DevKit\",tools:[1,2,3]};"
+  },
+  {
+    "id": "code-minifier",
+    "slug": "code-minifier",
+    "category": "text",
+    "order": 19,
+    "titleKey": "tools.code-minifier.title",
+    "descriptionKey": "tools.code-minifier.description",
+    "keywords": ["代码压缩", "Code Minifier", "code-minifier"],
+    "example": "function greet(name) { return \"Hello, \" + name; }"
+  },
+  {
+    "id": "js-obfuscator",
+    "slug": "js-obfuscator",
+    "category": "text",
+    "order": 20,
+    "titleKey": "tools.js-obfuscator.title",
+    "descriptionKey": "tools.js-obfuscator.description",
+    "keywords": ["JavaScript 混淆", "JavaScript Obfuscator", "js-obfuscator"],
+    "example": "function greet(name) { return \"Hello, \" + name; }"
+  },
+  {
+    "id": "text-diff",
+    "slug": "text-diff",
+    "category": "text",
+    "order": 21,
+    "titleKey": "tools.text-diff.title",
+    "descriptionKey": "tools.text-diff.description",
+    "keywords": ["文本对比", "Text Diff", "text-diff"],
+    "example": "Hello DevKit\nLocal tools\n"
+  },
+  {
+    "id": "regex",
+    "slug": "regex",
+    "category": "text",
+    "order": 22,
+    "titleKey": "tools.regex.title",
+    "descriptionKey": "tools.regex.description",
+    "keywords": ["正则测试", "Regex Tester", "regex"],
+    "example": "hello@example.com\nteam@devkit.local"
+  },
+  {
+    "id": "text-batch",
+    "slug": "text-batch",
+    "category": "text",
+    "order": 23,
+    "titleKey": "tools.text-batch.title",
+    "descriptionKey": "tools.text-batch.description",
+    "keywords": ["文本批处理", "Text Batch", "text-batch"],
+    "example": " apple \nbanana\napple\n\ncherry"
+  },
+  {
+    "id": "string-case",
+    "slug": "string-case",
+    "category": "text",
+    "order": 24,
+    "titleKey": "tools.string-case.title",
+    "descriptionKey": "tools.string-case.description",
+    "keywords": ["字符串转换", "String Converter", "string-case"],
+    "example": "hello wonderful world"
+  },
+  {
+    "id": "color",
+    "slug": "color",
+    "category": "css",
+    "order": 25,
+    "titleKey": "tools.color.title",
+    "descriptionKey": "tools.color.description",
+    "keywords": ["颜色工作台", "Color Workbench", "color"],
+    "example": "#0066cc"
+  },
+  {
+    "id": "gradient",
+    "slug": "gradient",
+    "category": "css",
+    "order": 26,
+    "titleKey": "tools.gradient.title",
+    "descriptionKey": "tools.gradient.description",
+    "keywords": ["渐变生成器", "Gradient Generator", "gradient"],
+    "example": ""
+  },
+  {
+    "id": "shadow",
+    "slug": "shadow",
+    "category": "css",
+    "order": 27,
+    "titleKey": "tools.shadow.title",
+    "descriptionKey": "tools.shadow.description",
+    "keywords": ["阴影生成器", "Shadow Generator", "shadow"],
+    "example": ""
+  },
+  {
+    "id": "radius",
+    "slug": "radius",
+    "category": "css",
+    "order": 28,
+    "titleKey": "tools.radius.title",
+    "descriptionKey": "tools.radius.description",
+    "keywords": ["圆角生成器", "Border Radius", "radius"],
+    "example": ""
+  },
+  {
+    "id": "flex",
+    "slug": "flex",
+    "category": "css",
+    "order": 29,
+    "titleKey": "tools.flex.title",
+    "descriptionKey": "tools.flex.description",
+    "keywords": ["Flex 演练", "Flex Playground", "flex"],
+    "example": ""
+  },
+  {
+    "id": "grid",
+    "slug": "grid",
+    "category": "css",
+    "order": 30,
+    "titleKey": "tools.grid.title",
+    "descriptionKey": "tools.grid.description",
+    "keywords": ["Grid 生成器", "Grid Generator", "grid"],
+    "example": ""
+  },
+  {
+    "id": "css-units",
+    "slug": "css-units",
+    "category": "css",
+    "order": 31,
+    "titleKey": "tools.css-units.title",
+    "descriptionKey": "tools.css-units.description",
+    "keywords": ["CSS 单位换算", "CSS Unit Converter", "css-units"],
+    "example": "16"
+  },
+  {
+    "id": "animation",
+    "slug": "animation",
+    "category": "css",
+    "order": 32,
+    "titleKey": "tools.animation.title",
+    "descriptionKey": "tools.animation.description",
+    "keywords": ["动画与缓动", "Animation & Easing", "animation"],
+    "example": ""
+  },
+  {
+    "id": "url-parser",
+    "slug": "url-parser",
+    "category": "web",
+    "order": 33,
+    "titleKey": "tools.url-parser.title",
+    "descriptionKey": "tools.url-parser.description",
+    "keywords": ["URL 解析与构建", "URL Parser & Builder", "url-parser"],
+    "example": "https://example.com:8080/path?q=hello&q=world#section"
+  },
+  {
+    "id": "curl-converter",
+    "slug": "curl-converter",
+    "category": "web",
+    "order": 34,
+    "titleKey": "tools.curl-converter.title",
+    "descriptionKey": "tools.curl-converter.description",
+    "keywords": ["cURL 转代码", "cURL to Code", "curl-converter"],
+    "example": "curl 'https://example.com/api' -X POST -H 'Content-Type: application/json' -d '{\"name\":\"DevKit\"}'"
+  },
+  {
+    "id": "http-reference",
+    "slug": "http-reference",
+    "category": "web",
+    "order": 35,
+    "titleKey": "tools.http-reference.title",
+    "descriptionKey": "tools.http-reference.description",
+    "keywords": ["HTTP 速查", "HTTP Reference", "http-reference"],
+    "example": ""
+  },
+  {
+    "id": "random",
+    "slug": "random",
+    "category": "generate",
+    "order": 36,
+    "titleKey": "tools.random.title",
+    "descriptionKey": "tools.random.description",
+    "keywords": ["UUID / 随机字符串", "UUID / Random String", "random"],
+    "example": ""
+  },
+  {
+    "id": "radix",
+    "slug": "radix",
+    "category": "generate",
+    "order": 37,
+    "titleKey": "tools.radix.title",
+    "descriptionKey": "tools.radix.description",
+    "keywords": ["进制转换", "Radix Converter", "radix"],
+    "example": "255"
+  },
+  {
+    "id": "mock-data",
+    "slug": "mock-data",
+    "category": "generate",
+    "order": 38,
+    "titleKey": "tools.mock-data.title",
+    "descriptionKey": "tools.mock-data.description",
+    "keywords": ["测试数据", "Mock Data", "mock-data"],
+    "example": ""
+  }
+]

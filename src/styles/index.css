@@ -1,0 +1,106 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+@theme inline {
+  --breakpoint-desktop: 75rem;
+  --color-background: var(--dk-background);
+  --color-surface: var(--dk-surface);
+  --color-muted: var(--dk-muted);
+  --color-primary: var(--dk-primary);
+  --color-secondary: var(--dk-secondary);
+  --color-border: var(--dk-border);
+  --color-accent: var(--dk-accent);
+  --color-accent-solid: #0066cc;
+  --color-on-accent: #ffffff;
+  --color-accent-subtle: var(--dk-accent-subtle);
+  --color-success: var(--dk-success);
+  --color-danger: var(--dk-danger);
+  --color-warning: var(--dk-warning);
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius-panel: 12px;
+  --shadow-card: 0 2px 8px #00000005;
+  --shadow-overlay: 0 16px 48px #00000029;
+}
+:root {
+  color-scheme: light;
+  --dk-background: #f5f5f7;
+  --dk-surface: #ffffff;
+  --dk-muted: #f0f1f4;
+  --dk-primary: #1d1d1f;
+  --dk-secondary: #62626a;
+  --dk-border: #dadce3;
+  --dk-accent: #0066cc;
+  --dk-accent-subtle: #e7f0ff;
+  --dk-success: #16743b;
+  --dk-danger: #b42318;
+  --dk-warning: #8a5800;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --dk-background: #111113;
+  --dk-surface: #1c1c1e;
+  --dk-muted: #262629;
+  --dk-primary: #f5f5f7;
+  --dk-secondary: #aeaeb6;
+  --dk-border: #3a3a40;
+  --dk-accent: #64acff;
+  --dk-accent-subtle: #17324f;
+  --dk-success: #71d49a;
+  --dk-danger: #ff958a;
+  --dk-warning: #f3c76a;
+}
+@layer base {
+  body {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    background: var(--dk-background);
+    color: var(--dk-primary);
+  }
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a,
+  summary {
+    touch-action: manipulation;
+  }
+  button:not(:disabled),
+  summary,
+  select {
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 2px solid var(--dk-accent);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: var(--dk-accent-subtle);
+  }
+  dialog::backdrop {
+    background: #0006;
+    backdrop-filter: blur(3px);
+  }
+  textarea {
+    tab-size: 2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
