@@ -42,7 +42,7 @@
   "common.unfavorite": "取消收藏",
   "common.moveUp": "上移",
   "common.moveDown": "下移",
-  "common.toolsCount": "49 个工具 · 7 个分类",
+  "common.toolsCount": "{tools} 个工具 · {categories} 个分类",
   "common.welcome": "让开发，轻松一点。",
   "common.welcomeNote": "你的日常开发工具，整齐地放在一起。",
   "common.browse": "浏览工具",

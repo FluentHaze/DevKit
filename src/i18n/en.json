@@ -42,7 +42,7 @@
   "common.unfavorite": "Unfavorite tool",
   "common.moveUp": "Move up",
   "common.moveDown": "Move down",
-  "common.toolsCount": "49 tools · 7 categories",
+  "common.toolsCount": "{tools} tools · {categories} categories",
   "common.welcome": "A little less friction. A lot more done.",
   "common.welcomeNote": "Your everyday developer tools, thoughtfully organized.",
   "common.browse": "Browse tools",

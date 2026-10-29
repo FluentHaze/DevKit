@@ -519,7 +519,11 @@ export default function App() {
                   </button>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-[11px] text-secondary">
-                  <span>{t('common.toolsCount')}</span>
+                  <span>
+                    {t('common.toolsCount')
+                      .replace('{tools}', String(tools.length))
+                      .replace('{categories}', String(categories.length))}
+                  </span>
                   <span className="flex items-center gap-1.5">
                     <ShieldCheck size={12} />
                     {t('common.local')}

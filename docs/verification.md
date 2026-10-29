@@ -88,3 +88,5 @@ pnpm build
 用户授权提交和部署后，重新执行冻结锁文件安装、docs:check、全仓格式、Lint、typecheck、197 项测试及 `/DevKit/` 子路径生产构建，均通过。Chrome 子路径生产预览验证 TypeScript → JSON、请求互转、Excel/CSV 工作台、PDF 本地资源及 PNG 渲染、代码卡片，静态入口返回 200，无页面异常。
 
 此处记录部署前证据，远程发布结果以 [Pages 工作流](https://github.com/FluentHaze/DevKit/actions/workflows/pages.yml) 的实际运行状态为准；不把本地构建视为线上部署成功。
+
+发布后线上抽查发现首页数量文案仍写死旧数量，修正为从工具/分类注册表填充双语占位符；后续增加工具不再手工维护首页数字。此修正需随追加提交重新发布并线上确认。
