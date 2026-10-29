@@ -15,4 +15,7 @@ export interface Result {
   bytes?: Uint8Array;
   preview?: string;
   note?: string;
+  image?: string;
+  html?: string;
+  bytesExtension?: string;
 }

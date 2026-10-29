@@ -29,7 +29,7 @@ self.onmessage = async ({ data }: MessageEvent<Task>) => {
       for (let offset = 0; offset < file.size; offset += 1024 * 1024)
         hash.update(new Uint8Array(await file.slice(offset, offset + 1024 * 1024).arrayBuffer()));
       result = { text: encodeBytes(hash.digest('binary'), String(params.encoding)) };
-    } else result = await transform(id, input, secondary, params);
+    } else result = await transform(id, input, secondary, params, file);
     self.postMessage({ taskId, ok: true, result, elapsed: performance.now() - start });
   } catch (error) {
     self.postMessage({

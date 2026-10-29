@@ -1,3 +1,5 @@
+import { fail } from '@/lib/errors';
+
 export type Params = Record<string, string | boolean>;
 export interface Field {
   key: string;
@@ -19,7 +21,8 @@ const text = (key: string, value = '', type: Field['type'] = 'text'): Field => (
 const number = (key: string, value: number): Field => text(key, String(value), 'number');
 const check = (key: string, value = false): Field => ({ key, type: 'checkbox', default: value });
 const zone = () => text('fromZone', Intl.DateTimeFormat().resolvedOptions().timeZone);
-const codeLanguage = () => select('language', ['javascript', 'typescript', 'html', 'css', 'sql']);
+const codeLanguage = () =>
+  select('language', ['javascript', 'typescript', 'html', 'css', 'sql', 'markdown']);
 const outputEncoding = () => select('encoding', ['HEX', 'Base64']);
 export const fields: Record<string, Field[]> = {
   'json-formatter': [
@@ -28,7 +31,45 @@ export const fields: Record<string, Field[]> = {
     check('sortKeys'),
   ],
   'json-escape': [select('mode', ['escape', 'unescape'])],
-  'json-diff': [],
+  'json-diff': [text('identityKey')],
+  'request-params': [
+    select('sourceFormat', ['query', 'json', 'key-value', 'pairs']),
+    select('outputFormat', ['json', 'query', 'key-value', 'pairs']),
+  ],
+  'json-schema': [
+    select('target', ['zod', 'json-schema']),
+    text('rootName', 'Root'),
+    check('optionalFields'),
+  ],
+  'json-reshape': [
+    select('mode', ['pick-rename', 'flatten', 'to-map']),
+    text('query', '$'),
+    text('pickFields'),
+    text('renameFields', '{}', 'textarea'),
+    text('identityKey', 'id'),
+  ],
+  'har-analyzer': [number('count', 10), check('redact', true)],
+  'env-diff': [select('mode', ['compare', 'env-example']), check('showValues')],
+  'i18n-check': [],
+  'svg-tools': [select('mode', ['optimize', 'jsx', 'data-uri'])],
+  'image-tools': [
+    select('format', ['webp', 'jpeg', 'png']),
+    number('width', 1920),
+    number('height', 1080),
+    number('quality', 0.8),
+  ],
+  'qr-code': [
+    select('mode', ['generate', 'read-qr']),
+    number('width', 320),
+    select('correction', ['M', 'L', 'Q', 'H']),
+  ],
+  'text-encoding': [
+    select('mode', ['inspect', 'convert']),
+    select('sourceEncoding', ['utf-8', 'gbk', 'utf-16le', 'utf-16be']),
+    select('targetEncoding', ['utf-8', 'gbk', 'utf-16le', 'utf-16be']),
+    select('newline', ['preserve', 'LF', 'CRLF']),
+    check('bom'),
+  ],
   'json-path': [text('query', '$.users[*].name')],
   'json-yaml': [select('mode', ['json-to-yaml', 'yaml-to-json'])],
   'json-csv': [
@@ -186,6 +227,7 @@ export const fields: Record<string, Field[]> = {
     ),
   ],
   'url-parser': [
+    select('mode', ['parse', 'compare']),
     text('protocol'),
     text('hostname'),
     text('port'),
@@ -194,7 +236,10 @@ export const fields: Record<string, Field[]> = {
     text('params', '', 'textarea'),
     check('reencode'),
   ],
-  'curl-converter': [select('target', ['fetch', 'axios', 'python'])],
+  'curl-converter': [
+    select('target', ['fetch', 'axios', 'python', 'request-json']),
+    check('redact'),
+  ],
   'http-reference': [],
   random: [
     select('mode', ['uuid', 'string']),
@@ -216,7 +261,13 @@ export const fields: Record<string, Field[]> = {
 };
 export const defaults = (id: string): Params =>
   Object.fromEntries((fields[id] ?? []).map((f) => [f.key, f.default]));
-export const sensitiveTools = new Set(['aes', 'hmac', 'jwt', 'curl-converter']);
+export function validateParams(id: string, params: Params) {
+  for (const field of fields[id] ?? []) {
+    if (field.options && !field.options.includes(String(params[field.key]))) fail('params');
+    if (field.type === 'checkbox' && typeof params[field.key] !== 'boolean') fail('params');
+  }
+}
+export { sensitiveTools } from '@/lib/sensitive-tools';
 export const visualTools = new Set([
   'color',
   'gradient',

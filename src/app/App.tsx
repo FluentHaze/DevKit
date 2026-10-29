@@ -7,9 +7,9 @@ import {
   ArrowUp,
   Braces,
   ChevronDown,
-  Command,
   Download,
   Home,
+  Languages,
   Menu,
   Monitor,
   Moon,
@@ -27,12 +27,15 @@ import { Button } from '@/components/ui';
 import { categoryIcons, toolIcon } from '@/components/icons';
 import { detectLocale, initialLanguage, translate, type LanguagePreference } from '@/i18n';
 import { readPreference, savePreference, clearDrafts } from '@/lib/storage';
+import { shortcutModifier } from '@/lib/keyboard';
 import type { AppContext } from './context';
 const ToolPage = lazy(() => import('@/tools/ToolPage'));
 type Theme = 'light' | 'dark' | 'system';
 type Recent = { id: string; time: number };
 const isStringList = (v: unknown): v is string[] =>
-  Array.isArray(v) && v.length <= 39 && v.every((id) => typeof id === 'string' && !!getTool(id));
+  Array.isArray(v) &&
+  v.length <= tools.length &&
+  v.every((id) => typeof id === 'string' && !!getTool(id));
 const isRecent = (v: unknown): v is Recent[] =>
   Array.isArray(v) &&
   v.length <= 20 &&
@@ -45,6 +48,7 @@ const isRecent = (v: unknown): v is Recent[] =>
       typeof r.time === 'number'
   );
 export default function App() {
+  const modifier = shortcutModifier();
   const [path, setPath] = useState(readRoute);
   const [language, setLanguage] = useState<LanguagePreference>(initialLanguage);
   const locale = language === 'auto' ? detectLocale(navigator.languages) : language;
@@ -293,7 +297,7 @@ export default function App() {
           >
             <Search size={14} />
             <span>{t('common.search')}</span>
-            <kbd className="ms-auto text-[10px]">⌘ K</kbd>
+            <kbd className="ms-auto text-[10px] whitespace-nowrap">{modifier} K</kbd>
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto px-3 pb-4" aria-label={t('common.allTools')}>
@@ -383,13 +387,13 @@ export default function App() {
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
-              className="p-1 text-secondary desktop:hidden"
+              className="shrink-0 p-1 text-secondary desktop:hidden"
               aria-label={t('common.menu')}
               onClick={() => setDrawer(!drawer)}
             >
               <Menu size={20} />
             </button>
-            <span className="truncate text-xs text-secondary">
+            <span className="hidden truncate text-xs text-secondary sm:inline">
               {t('common.home')}
               <span className="mx-2 text-border">/</span>
               <span className="text-primary">{tool ? t(tool.titleKey) : t('common.allTools')}</span>
@@ -402,14 +406,29 @@ export default function App() {
             </span>
             <Select
               aria-label={t('common.language')}
-              wrapperClassName="w-28 shrink-0"
-              className="h-8 min-h-8 rounded-md ps-2 text-xs"
+              title={t('common.languageHint')}
+              wrapperClassName="w-40 shrink-0 sm:w-56"
+              className="h-9 text-xs font-medium"
+              leading={
+                <span
+                  aria-hidden="true"
+                  className="flex shrink-0 items-center gap-1.5 text-secondary"
+                >
+                  <Languages size={17} className="text-accent" />
+                  <span className="hidden sm:inline">{t('common.language')}</span>
+                </span>
+              }
+              displayValue={
+                language === 'auto'
+                  ? `${locale === 'zh-CN' ? '简体中文' : 'English'} · ${t('common.autoShort')}`
+                  : undefined
+              }
               value={language}
-              onChange={(e) => setLanguage(e.target.value as LanguagePreference)}
+              onValueChange={(value) => setLanguage(value as LanguagePreference)}
             >
               <option value="zh-CN">简体中文</option>
               <option value="en">English</option>
-              <option value="auto">{t('common.auto')}</option>
+              <option value="auto">{t('common.followBrowser')}</option>
             </Select>
             <button
               className="rounded-lg p-2 text-secondary hover:bg-muted"
@@ -490,7 +509,7 @@ export default function App() {
                     onClick={() => setSearchOpen(true)}
                     className="absolute end-4 top-4 flex items-center gap-1 text-[10px] text-secondary"
                   >
-                    <Command size={12} />K
+                    <kbd className="whitespace-nowrap">{modifier} K</kbd>
                   </button>
                 </div>
                 <div className="mt-3 flex items-center justify-between text-[11px] text-secondary">
@@ -724,9 +743,10 @@ export default function App() {
           <label className="block text-sm">
             {t('common.theme')}
             <Select
+              aria-label={t('common.theme')}
               wrapperClassName="mt-2"
               value={theme}
-              onChange={(e) => setTheme(e.target.value as Theme)}
+              onValueChange={(value) => setTheme(value as Theme)}
             >
               {(['light', 'dark', 'system'] as const).map((v) => (
                 <option key={v} value={v}>

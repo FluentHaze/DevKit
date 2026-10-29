@@ -388,5 +388,105 @@
     "descriptionKey": "tools.mock-data.description",
     "keywords": ["测试数据", "Mock Data", "mock-data"],
     "example": ""
+  },
+  {
+    "id": "request-params",
+    "slug": "request-params",
+    "category": "web",
+    "order": 39,
+    "titleKey": "tools.request-params.title",
+    "descriptionKey": "tools.request-params.description",
+    "keywords": ["请求参数转换", "Request Parameters", "request-params"],
+    "example": "name=DevKit&tag=local&tag=private"
+  },
+  {
+    "id": "json-schema",
+    "slug": "json-schema",
+    "category": "data",
+    "order": 40,
+    "titleKey": "tools.json-schema.title",
+    "descriptionKey": "tools.json-schema.description",
+    "keywords": ["JSON → Zod / Schema", "JSON → Zod / Schema", "json-schema"],
+    "example": "{\"users\":[{\"id\":1,\"name\":\"Ada\"},{\"id\":2,\"name\":null,\"active\":true}]}"
+  },
+  {
+    "id": "json-reshape",
+    "slug": "json-reshape",
+    "category": "data",
+    "order": 41,
+    "titleKey": "tools.json-reshape.title",
+    "descriptionKey": "tools.json-reshape.description",
+    "keywords": ["JSON 数据整理", "JSON Reshape", "json-reshape"],
+    "example": "[{\"id\":1,\"name\":\"Ada\",\"active\":true},{\"id\":2,\"name\":\"Lin\",\"active\":false}]"
+  },
+  {
+    "id": "har-analyzer",
+    "slug": "har-analyzer",
+    "category": "web",
+    "order": 42,
+    "titleKey": "tools.har-analyzer.title",
+    "descriptionKey": "tools.har-analyzer.description",
+    "keywords": ["HAR 请求分析", "HAR Analyzer", "har-analyzer"],
+    "example": "{\"log\":{\"entries\":[{\"request\":{\"method\":\"GET\",\"url\":\"https://example.test/api?q=1\"},\"response\":{\"status\":200,\"content\":{\"size\":1024}},\"time\":125,\"timings\":{\"wait\":100,\"receive\":25}}]}}"
+  },
+  {
+    "id": "svg-tools",
+    "slug": "svg-tools",
+    "category": "css",
+    "order": 43,
+    "titleKey": "tools.svg-tools.title",
+    "descriptionKey": "tools.svg-tools.description",
+    "keywords": ["SVG 优化与转换", "SVG Tools", "svg-tools"],
+    "example": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"8\" fill=\"#0066cc\" /></svg>"
+  },
+  {
+    "id": "image-tools",
+    "slug": "image-tools",
+    "category": "css",
+    "order": 44,
+    "titleKey": "tools.image-tools.title",
+    "descriptionKey": "tools.image-tools.description",
+    "keywords": ["图片压缩与转换", "Image Tools", "image-tools"],
+    "example": ""
+  },
+  {
+    "id": "qr-code",
+    "slug": "qr-code",
+    "category": "generate",
+    "order": 45,
+    "titleKey": "tools.qr-code.title",
+    "descriptionKey": "tools.qr-code.description",
+    "keywords": ["二维码生成与识别", "QR Code", "qr-code"],
+    "example": "https://example.com/devkit"
+  },
+  {
+    "id": "env-diff",
+    "slug": "env-diff",
+    "category": "text",
+    "order": 46,
+    "titleKey": "tools.env-diff.title",
+    "descriptionKey": "tools.env-diff.description",
+    "keywords": ["环境配置对比", "Environment Diff", "env-diff"],
+    "example": "API_URL=https://example.test\nAPI_TOKEN=example\nDEBUG=true"
+  },
+  {
+    "id": "i18n-check",
+    "slug": "i18n-check",
+    "category": "data",
+    "order": 47,
+    "titleKey": "tools.i18n-check.title",
+    "descriptionKey": "tools.i18n-check.description",
+    "keywords": ["多语言资源检查", "Translation Check", "i18n-check"],
+    "example": "{\"hello\":\"Hello {name}\",\"save\":\"Save\",\"menu\":{\"home\":\"Home\"}}"
+  },
+  {
+    "id": "text-encoding",
+    "slug": "text-encoding",
+    "category": "text",
+    "order": 48,
+    "titleKey": "tools.text-encoding.title",
+    "descriptionKey": "tools.text-encoding.description",
+    "keywords": ["文本编码检查与转换", "Text Encoding", "text-encoding"],
+    "example": "Hello 世界\r\nDevKit​"
   }
 ]

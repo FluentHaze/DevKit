@@ -147,9 +147,11 @@ export async function transformText(
         ? await import('prettier/plugins/babel')
         : language === 'typescript'
           ? await import('prettier/plugins/typescript')
-          : language === 'html'
-            ? await import('prettier/plugins/html')
-            : await import('prettier/plugins/postcss');
+          : language === 'markdown'
+            ? await import('prettier/plugins/markdown')
+            : language === 'html'
+              ? await import('prettier/plugins/html')
+              : await import('prettier/plugins/postcss');
     const estree = await import('prettier/plugins/estree');
     return {
       text: await prettier.format(input, {
@@ -158,8 +160,13 @@ export async function transformText(
         tabWidth: p.indent === '4' ? 4 : 2,
         useTabs: p.indent === 'tab',
       }),
+      ...(language === 'markdown'
+        ? { html: await (await import('marked')).marked.parse(input, { async: false }) }
+        : {}),
       extension:
-        ({ javascript: 'js', typescript: 'ts' } as Record<string, string>)[language] ?? language,
+        ({ javascript: 'js', typescript: 'ts', markdown: 'md' } as Record<string, string>)[
+          language
+        ] ?? language,
     };
   }
   if (id === 'code-minifier') {

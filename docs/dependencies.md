@@ -1,32 +1,72 @@
-# 依赖用途与许可证
+# 依赖用途、版本与许可证
 
-核查日期：2026-10-28。版本来自实际安装结果及 pnpm-lock.yaml；许可证与项目地址来自官方 npm 包元数据。选型核实了 React、Vite、Tailwind、Prettier、YAML、Cron、混淆器等官方文档；不使用运行时 CDN。
+核对日期：2026-10-29。版本、许可证和仓库地址读取自当前安装包元数据；约束在 package.json，精确解析在 pnpm-lock.yaml。本表是当前快照，不宣称上游最新，也不替代完整传递依赖许可证审计。
 
-| 包                    | 版本   | 许可证       | 用途 / 官方项目                                                                                                 |
-| --------------------- | ------ | ------------ | --------------------------------------------------------------------------------------------------------------- |
-| @js-temporal/polyfill | 0.5.1  | ISC          | IANA 时区、DST 歧义拒绝与日历运算 · [官方项目](https://github.com/js-temporal/temporal-polyfill)                |
-| cron-parser           | 5.10.2 | MIT          | 五/六段标准 Cron 未来时间 · [官方项目](https://github.com/harrisiirak/cron-parser)                              |
-| css-tree              | 3.2.1  | MIT          | CSS 解析/序列化压缩 · [官方项目](csstree/csstree)                                                               |
-| culori                | 4.0.2  | MIT          | 颜色转换和 WCAG 比率 · [官方项目](git@github.com:Evercoder/culori)                                              |
-| diff                  | 9.0.0  | BSD-3-Clause | 行/字符 diff · [官方项目](https://github.com/kpdecker/jsdiff)                                                   |
-| hash-wasm             | 4.12.0 | MIT          | 流式 MD5/SHA 文件与文本摘要 · [官方项目](https://github.com/Daninet/hash-wasm)                                  |
-| he                    | 2.0.0  | MIT          | HTML 命名与数字实体 · [官方项目](https://github.com/mathiasbynens/he)                                           |
-| html-minifier-terser  | 7.2.0  | MIT          | 保留显示空白的 HTML 压缩 · [官方项目](https://github.com/terser/html-minifier-terser)                           |
-| javascript-obfuscator | 5.9.0  | BSD-2-Clause | 本地 JS 混淆，browser-no-eval 输出 · [官方项目](https://github.com/javascript-obfuscator/javascript-obfuscator) |
-| jsonc-parser          | 3.3.1  | MIT          | JSON 语法树、错误位置和重复键检测 · [官方项目](https://github.com/microsoft/node-jsonc-parser)                  |
-| lucide-react          | 1.63.0 | ISC          | 统一 SVG 图标 · [官方项目](https://github.com/lucide-icons/lucide)                                              |
-| papaparse             | 5.7.0  | MIT          | CSV 解析与序列化 · [官方项目](https://github.com/mholt/PapaParse)                                               |
-| prettier              | 3.9.10 | MIT          | 本地 JS/TS/HTML/CSS 格式化 · [官方项目](prettier/prettier)                                                      |
-| react                 | 19.3.1 | MIT          | 组件和状态 · [官方项目](https://github.com/react/react)                                                         |
-| react-dom             | 19.3.1 | MIT          | 浏览器渲染 · [官方项目](https://github.com/react/react)                                                         |
-| sql-formatter         | 15.9.0 | MIT          | SQL 格式化与方言 · [官方项目](https://github.com/sql-formatter-org/sql-formatter)                               |
-| terser                | 5.51.2 | BSD-2-Clause | JS 语义压缩，不执行源码 · [官方项目](https://github.com/terser/terser)                                          |
-| yaml                  | 2.9.1  | ISC          | YAML 1.2 core schema、别名限制 · [官方项目](github:eemeli/yaml)                                                 |
+## 运行时依赖
 
-开发依赖：TypeScript 5.9（与 typescript-eslint 的受支持范围匹配）、Vite 8、Tailwind 4 的官方 Vite 插件、ESLint、Vitest、Prettier Tailwind 插件及类型声明；具体版本由锁文件固定。Node 要求来自当前 Vite 官方兼容范围。
+| 包                      | 安装版本 | 许可证                  | 用途 / 官方仓库                                                                                        |
+| ----------------------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| `@js-temporal/polyfill` | 0.5.1    | ISC                     | IANA 时区、DST 和日历计算 · [来源](https://github.com/js-temporal/temporal-polyfill)                   |
+| `cron-parser`           | 5.10.2   | MIT                     | 标准五/六段 Cron 时间枚举 · [来源](https://github.com/harrisiirak/cron-parser)                         |
+| `cronstrue`             | 3.38.0   | MIT                     | 中英文 Cron 描述 · [来源](https://github.com/bradymholt/cRonstrue)                                     |
+| `css-tree`              | 3.2.1    | MIT                     | CSS 语法解析和压缩 · [来源](https://github.com/csstree/csstree)                                        |
+| `culori`                | 4.0.2    | MIT                     | 颜色转换与 WCAG 比率 · [来源](https://github.com/Evercoder/culori)                                     |
+| `diff`                  | 9.0.0    | BSD-3-Clause            | 行/字符差异 · [来源](https://github.com/kpdecker/jsdiff)                                               |
+| `dompurify`             | 3.4.17   | (MPL-2.0 OR Apache-2.0) | SVG 和 Markdown 清理 · [来源](https://github.com/cure53/DOMPurify)                                     |
+| `hash-wasm`             | 4.12.0   | MIT                     | 流式文件及文本哈希 · [来源](https://github.com/Daninet/hash-wasm)                                      |
+| `he`                    | 2.0.0    | MIT                     | HTML 实体编解码 · [来源](https://github.com/mathiasbynens/he)                                          |
+| `html-minifier-terser`  | 7.2.0    | MIT                     | 保留显示空白的 HTML 压缩 · [来源](https://github.com/terser/html-minifier-terser)                      |
+| `javascript-obfuscator` | 5.9.0    | BSD-2-Clause            | JS 混淆、browser-no-eval 输出 · [来源](https://github.com/javascript-obfuscator/javascript-obfuscator) |
+| `jsonc-parser`          | 3.3.1    | MIT                     | JSON 语法树、行列与保真校验 · [来源](https://github.com/microsoft/node-jsonc-parser)                   |
+| `jsqr`                  | 1.4.0    | Apache-2.0              | Worker 内二维码解码 · [来源](https://github.com/cozmo/jsQR)                                            |
+| `lucide-react`          | 1.63.0   | ISC                     | 统一 SVG 图标 · [来源](https://github.com/lucide-icons/lucide)                                         |
+| `marked`                | 18.1.2   | MIT                     | Markdown 转 HTML，仍需清理 · [来源](https://github.com/markedjs/marked)                                |
+| `papaparse`             | 5.7.0    | MIT                     | CSV 解析与序列化 · [来源](https://github.com/mholt/PapaParse)                                          |
+| `prettier`              | 3.9.10   | MIT                     | 代码/Markdown 格式化和项目排版 · [来源](https://github.com/prettier/prettier)                          |
+| `qrcode`                | 1.5.4    | MIT                     | 二维码 SVG 和本地示例 · [来源](https://github.com/soldair/node-qrcode)                                 |
+| `react`                 | 19.3.1   | MIT                     | 组件和状态 · [来源](https://github.com/react/react)                                                    |
+| `react-dom`             | 19.3.1   | MIT                     | DOM 渲染 · [来源](https://github.com/react/react)                                                      |
+| `sql-formatter`         | 15.9.0   | MIT                     | SQL 方言格式化 · [来源](https://github.com/sql-formatter-org/sql-formatter)                            |
+| `svgo`                  | 4.1.0    | MIT                     | Worker 内 SVG 浏览器优化 · [来源](https://github.com/svg/svgo)                                         |
+| `terser`                | 5.51.2   | BSD-2-Clause            | JS 压缩，不执行输入 · [来源](https://github.com/terser/terser)                                         |
+| `yaml`                  | 2.9.1    | ISC                     | YAML core schema 解析 · [来源](https://github.com/eemeli/yaml)                                         |
 
-混淆器的浏览器 bundle 含上游 `eval("require")` getter，构建器会给出警告；应用不调用该 getter，也不使用 eval 执行输入。生产页面 CSP 不允许 `unsafe-eval`，选择 `browser-no-eval` 输出；在模块 Worker 中为上游 Chance 的全局赋值预建属性，已通过实际生产浏览器运行验证。该兼容处理位于 `src/tools/text.ts`。
+## 开发依赖
 
-大型格式器/混淆器只在使用对应工具时加载，不计入首页初始 JS；hash-wasm 的 WASM 编译使用 `wasm-unsafe-eval`，不开放 JavaScript eval。
+| 包                            | 安装版本 | 许可证     | 用途 / 官方仓库                                                                              |
+| ----------------------------- | -------- | ---------- | -------------------------------------------------------------------------------------------- |
+| `@eslint/js`                  | 10.0.1   | MIT        | 静态规则和 Hooks 检查 · [来源](https://github.com/eslint/eslint)                             |
+| `@tailwindcss/vite`           | 4.3.3    | MIT        | Tailwind 样式构建 · [来源](https://github.com/tailwindlabs/tailwindcss)                      |
+| `@types/css-tree`             | 3.2.0    | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/culori`               | 4.0.1    | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/he`                   | 1.2.3    | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/html-minifier-terser` | 7.0.2    | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/node`                 | 26.6.5   | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/papaparse`            | 5.5.2    | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/qrcode`               | 1.5.6    | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/react`                | 19.3.0   | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@types/react-dom`            | 19.3.0   | MIT        | 开发类型声明 · [来源](https://github.com/DefinitelyTyped/DefinitelyTyped)                    |
+| `@vitejs/plugin-react`        | 6.1.2    | MIT        | React 构建支持 · [来源](https://github.com/vitejs/vite-plugin-react)                         |
+| `eslint`                      | 10.13.0  | MIT        | 静态规则和 Hooks 检查 · [来源](https://github.com/eslint/eslint)                             |
+| `eslint-plugin-react-hooks`   | 7.1.1    | MIT        | 静态规则和 Hooks 检查 · [来源](https://github.com/facebook/react)                            |
+| `eslint-plugin-react-refresh` | 0.5.7    | MIT        | 静态规则和 Hooks 检查 · [来源](https://github.com/ArnaudBarre/eslint-plugin-react-refresh)   |
+| `prettier-plugin-tailwindcss` | 0.8.1    | MIT        | 格式及 Tailwind 类排序 · [来源](https://github.com/tailwindlabs/prettier-plugin-tailwindcss) |
+| `tailwindcss`                 | 4.3.3    | MIT        | Tailwind 样式构建 · [来源](https://github.com/tailwindlabs/tailwindcss)                      |
+| `typescript`                  | 5.9.3    | Apache-2.0 | 类型检查与文档静态语法读取 · [来源](https://github.com/microsoft/TypeScript)                 |
+| `typescript-eslint`           | 8.72.1   | MIT        | 静态规则和 Hooks 检查 · [来源](https://github.com/typescript-eslint/typescript-eslint)       |
+| `vite`                        | 8.3.5    | MIT        | 开发、构建和预览 · [来源](https://github.com/vitejs/vite)                                    |
+| `vitest`                      | 5.0.5    | MIT        | 自动测试 · [来源](https://github.com/vitest-dev/vitest)                                      |
 
-Cron 自然语言说明按需使用 cronstrue 3.38.0（MIT，[官方项目](https://github.com/bradymholt/cRonstrue)）；已核实其 i18n API，仅允许本产品的五/六段标准语法，并显式使用日/周 OR 语义。
+## 加载、隐私与兼容边界
+
+- 工具算法、格式器、混淆器和媒体依赖按功能懒加载，构建成本地静态资源；不使用运行时 CDN。生产资源清单应包含 Worker 与依赖。
+- jsQR 当前安装 1.4.0，不据此宣称近期频繁发版。SVG 使用 SVGO 浏览器入口，不能使用 Node 专用入口替代。
+- Marked 不负责清理。Markdown 预览还需 DOMPurify 和无脚本 iframe；SVG 清理后才优化与展示。
+- 图片依赖本地 Canvas；二维码无需摄像头权限。编码工具使用 TextEncoder / TextDecoder；GBK 编码由严格解码建立可逆映射，不引入 Node Buffer / stream 垫片。
+- 混淆器浏览器包含上游 eval("require") getter，构建会警告；应用不调用该 getter、不执行用户源码。模块 Worker 为上游 Chance 的全局赋值预建属性，见 src/tools/text.ts。
+- CSP 不开放 JavaScript unsafe-eval；hash-wasm 的 WASM 编译单独使用 wasm-unsafe-eval。来源策略见 vite.config.ts。
+- 项目固定 pnpm 8.10.5，要求 Node >=22.12.0，CI 使用 Node 24；依赖升级后重新检查兼容性和许可证。
+
+## 新增或升级依赖
+
+说明用途、现有能力为何不足、浏览器和 Worker 入口、维护与许可证、体积和本地处理边界。安装后同时更新本表、锁文件、功能手册和验证记录。涉及上传、额外权限或隐私变化时先取得授权，见[开发指南](development.md)。

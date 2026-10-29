@@ -1,3 +1,4 @@
+import { sensitiveTools } from '@/lib/sensitive-tools';
 import metadata from './metadata.json';
 export const categories = ['data', 'crypto', 'time', 'text', 'css', 'web', 'generate'] as const;
 export type Category = (typeof categories)[number];
@@ -19,7 +20,7 @@ export const tools: Tool[] = metadata.map((tool) => ({
     local: true,
     worker: tool.id !== 'http-reference',
     download: tool.id !== 'http-reference',
-    sensitive: ['aes', 'hmac', 'jwt', 'curl-converter'].includes(tool.id),
+    sensitive: sensitiveTools.has(tool.id),
   },
   loader: () => import('./ToolPage'),
 }));

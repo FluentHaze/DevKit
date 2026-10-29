@@ -1,3 +1,4 @@
+import { sensitiveTools } from '@/lib/sensitive-tools';
 export function readPreference<T>(key: string, fallback: T, validate: (v: unknown) => v is T): T {
   try {
     const raw = localStorage.getItem(`devkit:v1:${key}`);
@@ -20,7 +21,7 @@ const DRAFT_LIMIT = 256 * 1024;
 export function readDraft(
   id: string
 ): { input: string; secondary: string; params: Record<string, string | boolean> } | undefined {
-  if (['aes', 'hmac', 'jwt', 'curl-converter'].includes(id)) return;
+  if (sensitiveTools.has(id)) return;
   try {
     const raw = localStorage.getItem(`devkit:v1:draft:${id}`);
     if (!raw || raw.length > DRAFT_LIMIT) return;
@@ -48,7 +49,7 @@ export function writeDraft(
   id: string,
   draft?: { input: string; secondary: string; params: Record<string, string | boolean> }
 ): boolean {
-  if (['aes', 'hmac', 'jwt', 'curl-converter'].includes(id)) return false;
+  if (sensitiveTools.has(id)) return false;
   try {
     const key = `devkit:v1:draft:${id}`;
     if (!draft) {

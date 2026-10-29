@@ -203,12 +203,18 @@ describe('dates, regular expressions and CSS safety', () => {
 });
 
 describe('all tool examples', () => {
-  for (const tool of metadata.filter((item) => item.id !== 'http-reference')) {
+  for (const tool of metadata.filter(
+    (item) => !['http-reference', 'svg-tools', 'image-tools', 'qr-code'].includes(item.id)
+  )) {
     it(`${tool.id} produces a real result`, async () => {
       const params: Record<string, string | boolean> = {};
       if (tool.id === 'aes') params.key = '00'.repeat(32);
       if (tool.id === 'hmac') params.key = 'example-key';
-      const secondary = tool.id === 'json-diff' ? '{}' : tool.id === 'text-diff' ? 'changed\n' : '';
+      const secondary = ['json-diff', 'i18n-check'].includes(tool.id)
+        ? '{}'
+        : tool.id === 'text-diff'
+          ? 'changed\n'
+          : '';
       const result = await run(tool.id, tool.example, params, secondary);
       expect(typeof result.text).toBe('string');
       expect(result.text.length).toBeGreaterThan(0);

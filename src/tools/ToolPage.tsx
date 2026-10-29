@@ -20,14 +20,17 @@ import { Button, controlClass } from '@/components/ui';
 import { toolIcon } from '@/components/icons';
 import { Editor } from '@/components/Editor';
 import type { AppContext } from '@/app/context';
-import type { Result } from '@/lib/errors';
+import { ToolError, type Result } from '@/lib/errors';
 import { utf8 } from '@/lib/encoding';
 import { readDraft, writeDraft } from '@/lib/storage';
+import { shortcutModifier } from '@/lib/keyboard';
 import { fields, defaults, noInputTools, sensitiveTools, visualTools, type Params } from './schema';
 import { tools, type Tool } from './registry';
 import VisualControls from './VisualControls';
 const Reference = lazy(() => import('./Reference'));
 const CronDescription = lazy(() => import('./CronDescription'));
+const browserTools = new Set(['svg-tools', 'image-tools', 'qr-code']);
+const comparisonTools = new Set(['json-diff', 'text-diff', 'env-diff', 'i18n-check', 'url-parser']);
 type Status = 'idle' | 'dirty' | 'running' | 'success' | 'error' | 'cancelled';
 interface Draft {
   input: string;
@@ -73,6 +76,10 @@ const notices: Record<string, string> = {
   'curl-converter': 'curlNote',
   'mock-data': 'mockNote',
   'css-units': 'unitNote',
+  'text-encoding': 'encodingNote',
+  'image-tools': 'imageNote',
+  'json-diff': 'jsonDiffNote',
+  'i18n-check': 'i18nNote',
 };
 export default function ToolPage({
   tool,
@@ -82,6 +89,7 @@ export default function ToolPage({
   toggleFavorite,
   navigate,
 }: AppContext & { tool: Tool }) {
+  const modifier = shortcutModifier();
   const [draft, setDraft] = useState<Draft>(() => initialDraft(tool.id));
   const [wrap, setWrap] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -101,6 +109,7 @@ export default function ToolPage({
   const previewFrame = useRef<HTMLIFrameElement>(null);
   const [animationVersion, setAnimationVersion] = useState(0);
   const worker = useRef<Worker | null>(null);
+  const browserTask = useRef<AbortController | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const serial = useRef(0);
   const composing = useRef(false);
@@ -119,6 +128,8 @@ export default function ToolPage({
     serial.current++;
     worker.current?.terminate();
     worker.current = null;
+    browserTask.current?.abort();
+    browserTask.current = null;
     if (timer.current) clearTimeout(timer.current);
   }, []);
   useEffect(
@@ -174,7 +185,13 @@ export default function ToolPage({
     stop();
     setMessage('');
     setCopied(false);
-    if (!draft.input.length && !noInputTools.has(tool.id) && !file) {
+    if (
+      !draft.input.length &&
+      !noInputTools.has(tool.id) &&
+      !file &&
+      tool.id !== 'image-tools' &&
+      !(tool.id === 'qr-code' && draft.params.mode === 'read-qr')
+    ) {
       changeDraft({ status: 'idle', result: undefined });
       return;
     }
@@ -184,10 +201,6 @@ export default function ToolPage({
     }
     const taskId = ++serial.current;
     changeDraft({ status: 'running', result: undefined, code: undefined, detail: undefined });
-    const instance = new Worker(new URL('../workers/transform.worker.ts', import.meta.url), {
-      type: 'module',
-    });
-    worker.current = instance;
     timer.current = setTimeout(
       () => {
         if (serial.current === taskId) {
@@ -197,7 +210,34 @@ export default function ToolPage({
       },
       tool.id === 'regex' ? 1000 : 60000
     );
-    instance.onmessage = ({
+    if (browserTools.has(tool.id)) {
+      const controller = new AbortController();
+      browserTask.current = controller;
+      const start = performance.now();
+      void import('./browser')
+        .then(({ transformBrowser }) =>
+          transformBrowser(tool.id, draft.input, draft.params, file, controller.signal)
+        )
+        .then((result) => {
+          if (taskId !== serial.current) return;
+          stop();
+          changeDraft({ status: 'success', result, elapsed: performance.now() - start });
+        })
+        .catch((error: unknown) => {
+          if (taskId !== serial.current) return;
+          stop();
+          changeDraft({
+            status: 'error',
+            code: error instanceof ToolError ? error.code : 'invalid',
+          });
+        });
+      return;
+    }
+    const instance = new Worker(new URL('../workers/transform.worker.ts', import.meta.url), {
+      type: 'module',
+    });
+    worker.current = instance;
+    instance.onmessage = async ({
       data,
     }: MessageEvent<{
       taskId: number;
@@ -208,6 +248,18 @@ export default function ToolPage({
       detail: string;
     }>) => {
       if (data.taskId !== serial.current) return;
+      if (data.ok && data.result.html) {
+        try {
+          const { safePreview } = await import('./browser');
+          if (data.taskId !== serial.current) return;
+          data.result.html = safePreview(data.result.html);
+        } catch {
+          if (data.taskId !== serial.current) return;
+          stop();
+          changeDraft({ status: 'error', code: 'capability' });
+          return;
+        }
+      }
       stop();
       if (data.ok) changeDraft({ status: 'success', result: data.result, elapsed: data.elapsed });
       else
@@ -283,7 +335,7 @@ export default function ToolPage({
     setExported(true);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${tool.id}-${Date.now()}.${raw ? 'bin' : (draft.result.extension ?? 'txt')}`;
+    link.download = `${tool.id}-${Date.now()}.${raw ? (draft.result.bytesExtension ?? 'bin') : (draft.result.extension ?? 'txt')}`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
@@ -293,21 +345,31 @@ export default function ToolPage({
     const readTask = serial.current;
     setSaveDraft(false);
     writeDraft(tool.id);
-    const max = tool.id === 'hash' ? 100 * 1024 * 1024 : 5 * 1024 * 1024;
+    const max =
+      tool.id === 'hash'
+        ? 100 * 1024 * 1024
+        : ['image-tools', 'qr-code'].includes(tool.id)
+          ? 20 * 1024 * 1024
+          : 5 * 1024 * 1024;
     if (selected.size > max) {
       modify({});
       changeDraft({ status: 'error', code: 'limit' });
       return;
     }
-    if (tool.id === 'hash') {
+    if (
+      ['hash', 'image-tools', 'text-encoding'].includes(tool.id) ||
+      (tool.id === 'qr-code' && draft.params.mode === 'read-qr')
+    ) {
       setFile(selected);
       modify({});
     } else {
       try {
         const text = new TextDecoder('utf-8', { fatal: true }).decode(await selected.arrayBuffer());
         if (readTask !== serial.current) return;
+        setFile(undefined);
         modify({ input: text });
       } catch {
+        if (readTask !== serial.current) return;
         changeDraft({ status: 'error', code: 'utf8' });
       }
     }
@@ -317,12 +379,18 @@ export default function ToolPage({
   const notice = notices[tool.id];
   const preview = draft.result?.preview?.startsWith('<!doctype') ? draft.result.preview : undefined;
   const previewSource = preview;
+  const binaryInput =
+    tool.id === 'image-tools' || (tool.id === 'qr-code' && draft.params.mode === 'read-qr');
+  const hasComparison =
+    comparisonTools.has(tool.id) && (tool.id !== 'url-parser' || draft.params.mode === 'compare');
   useEffect(() => {
     const demo = previewFrame.current?.contentDocument?.querySelector<HTMLElement>('.demo');
     if (demo) demo.style.animationPlayState = isPaused ? 'paused' : 'running';
   }, [isPaused, preview]);
-  const setParam = (key: string, value: string | boolean) =>
+  const setParam = (key: string, value: string | boolean) => {
+    if (tool.id === 'qr-code' && key === 'mode') setFile(undefined);
     modify({ params: { ...draft.params, [key]: value } });
+  };
   return (
     <div
       className="mx-auto max-w-400 space-y-6"
@@ -375,7 +443,9 @@ export default function ToolPage({
                 <Play size={15} />
               )}{' '}
               {t(draft.status === 'running' ? 'common.running' : 'common.run')}
-              <kbd className="ms-2 hidden text-[10px] opacity-65 sm:block">⌘ ↵</kbd>
+              <kbd className="ms-2 hidden text-[10px] whitespace-nowrap opacity-65 sm:block">
+                {modifier} ↵
+              </kbd>
             </Button>
             {draft.status === 'running' && (
               <Button
@@ -391,7 +461,28 @@ export default function ToolPage({
             {!noInputTools.has(tool.id) && (
               <Button
                 onClick={() => {
-                  if (draft.input && !window.confirm(t('common.confirmExample'))) return;
+                  if ((draft.input || file) && !window.confirm(t('common.confirmExample'))) return;
+                  if (binaryInput) {
+                    stop();
+                    const taskId = serial.current;
+                    changeDraft({ status: 'running', result: undefined });
+                    void import('./browser')
+                      .then(({ exampleImage }) =>
+                        exampleImage(tool.id === 'qr-code' ? tool.example : undefined)
+                      )
+                      .then((example) => {
+                        if (serial.current !== taskId) return;
+                        setFile(example);
+                        setSaveDraft(false);
+                        writeDraft(tool.id);
+                        modify({ input: '' });
+                      })
+                      .catch(() => {
+                        if (serial.current === taskId)
+                          changeDraft({ status: 'error', code: 'capability' });
+                      });
+                    return;
+                  }
                   setFile(undefined);
                   modify({
                     input: tool.example,
@@ -414,7 +505,13 @@ export default function ToolPage({
                         ? '{"name":"DevKit","version":2,"tags":["local","fast"]}'
                         : tool.id === 'text-diff'
                           ? 'Hello DevKit\nPrivate tools\n'
-                          : draft.secondary,
+                          : tool.id === 'env-diff'
+                            ? 'API_URL=https://staging.example.test\nAPI_TOKEN=another-example\nFEATURE=true'
+                            : tool.id === 'i18n-check'
+                              ? '{"hello":"你好 {username}","save":"","menu":{"home":"首页"}}'
+                              : tool.id === 'url-parser'
+                                ? 'https://example.com:8080/path?q=world&channel=ad'
+                                : draft.secondary,
                   });
                 }}
               >
@@ -454,6 +551,11 @@ export default function ToolPage({
                 <input
                   aria-label={t('common.file')}
                   type="file"
+                  accept={
+                    binaryInput
+                      ? 'image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp'
+                      : undefined
+                  }
                   className="sr-only"
                   onChange={(e) => {
                     void loadFile(e.target.files?.[0]);
@@ -468,53 +570,64 @@ export default function ToolPage({
               aria-label={t('common.parameters')}
               className="grid grid-cols-1 gap-4 rounded-panel border border-border bg-surface p-4 sm:grid-cols-2 xl:grid-cols-4"
             >
-              {fields[tool.id].map((field) => (
-                <label
-                  key={field.key}
-                  className={`min-w-0 ${field.type === 'textarea' ? 'sm:col-span-2' : ''}`}
-                >
-                  <span className="mb-1.5 block text-xs font-medium text-secondary">
-                    {t(`fields.${field.key}`)}
-                  </span>
-                  {field.type === 'select' ? (
-                    <Select
-                      value={String(draft.params[field.key])}
-                      onChange={(e) => setParam(field.key, e.target.value)}
-                    >
-                      {field.options?.map((option) => (
-                        <option key={option} value={option}>
-                          {t(`options.${option}`).startsWith('options.')
-                            ? option
-                            : t(`options.${option}`)}
-                        </option>
-                      ))}
-                    </Select>
-                  ) : field.type === 'checkbox' ? (
+              {fields[tool.id].map((field) =>
+                field.type === 'checkbox' ? (
+                  <label
+                    key={field.key}
+                    className="flex min-h-9 min-w-0 cursor-pointer items-center gap-2.5 self-end rounded-lg border border-border bg-surface px-3 py-1.5 text-[13px] text-primary transition-colors hover:bg-muted"
+                  >
                     <input
                       type="checkbox"
-                      className="size-5 accent-accent"
+                      className="size-4 shrink-0 cursor-pointer accent-accent"
                       checked={Boolean(draft.params[field.key])}
                       onChange={(e) => setParam(field.key, e.target.checked)}
                     />
-                  ) : field.type === 'textarea' ? (
-                    <textarea
-                      className={`${controlClass} min-h-22 font-mono text-xs`}
-                      value={String(draft.params[field.key])}
-                      onChange={(e) => setParam(field.key, e.target.value)}
-                      spellCheck={false}
-                    />
-                  ) : (
-                    <input
-                      type={field.type}
-                      step="any"
-                      autoComplete="off"
-                      className={`${controlClass} ${field.type === 'password' ? 'font-mono' : ''}`}
-                      value={String(draft.params[field.key])}
-                      onChange={(e) => setParam(field.key, e.target.value)}
-                    />
-                  )}
-                </label>
-              ))}
+                    <span className="min-w-0 break-words">{t(`fields.${field.key}`)}</span>
+                  </label>
+                ) : (
+                  <label
+                    key={field.key}
+                    className={`min-w-0 ${field.type === 'textarea' ? 'sm:col-span-2' : ''}`}
+                  >
+                    <span className="mb-1.5 block text-xs font-medium text-secondary">
+                      {t(
+                        `fields.${tool.id === 'qr-code' && field.key === 'width' ? 'qrWidth' : field.key}`
+                      )}
+                    </span>
+                    {field.type === 'select' ? (
+                      <Select
+                        aria-label={t(`fields.${field.key}`)}
+                        value={String(draft.params[field.key])}
+                        onValueChange={(value) => setParam(field.key, value)}
+                      >
+                        {field.options?.map((option) => (
+                          <option key={option} value={option}>
+                            {t(`options.${option}`).startsWith('options.')
+                              ? option
+                              : t(`options.${option}`)}
+                          </option>
+                        ))}
+                      </Select>
+                    ) : field.type === 'textarea' ? (
+                      <textarea
+                        className={`${controlClass} min-h-22 font-mono text-xs`}
+                        value={String(draft.params[field.key])}
+                        onChange={(e) => setParam(field.key, e.target.value)}
+                        spellCheck={false}
+                      />
+                    ) : (
+                      <input
+                        type={field.type}
+                        step="any"
+                        autoComplete="off"
+                        className={`${controlClass} ${field.type === 'password' ? 'font-mono' : ''}`}
+                        value={String(draft.params[field.key])}
+                        onChange={(e) => setParam(field.key, e.target.value)}
+                      />
+                    )}
+                  </label>
+                )
+              )}
             </section>
           )}
           <VisualControls
@@ -580,17 +693,45 @@ export default function ToolPage({
               </button>
             </p>
           )}
-          <label className="hidden items-center justify-end gap-3 text-xs text-secondary desktop:flex">
-            <span>{t('common.split')}</span>
-            <input
-              type="range"
-              min="35"
-              max="65"
-              value={split}
-              className="w-28 accent-accent"
-              onChange={(e) => setSplit(e.target.value)}
+          {binaryInput && !file && (
+            <p className="rounded-panel border border-dashed border-border bg-surface p-8 text-center text-sm text-secondary">
+              {t('common.imageInput')}
+            </p>
+          )}
+          {draft.result?.image && (
+            <section
+              aria-label={t('common.preview')}
+              className="rounded-panel border border-border bg-surface p-4"
+            >
+              <h2 className="mb-3 text-sm font-semibold">{t('common.preview')}</h2>
+              <img
+                src={draft.result.image}
+                alt={t('common.preview')}
+                className="mx-auto max-h-100 max-w-full rounded-lg"
+              />
+            </section>
+          )}
+          {draft.result?.html && (
+            <iframe
+              title={t('common.preview')}
+              sandbox=""
+              srcDoc={draft.result.html}
+              className="min-h-80 w-full rounded-panel border border-border bg-surface"
             />
-          </label>
+          )}
+          {!binaryInput && (
+            <label className="hidden items-center justify-end gap-3 text-xs text-secondary desktop:flex">
+              <span>{t('common.split')}</span>
+              <input
+                type="range"
+                min="35"
+                max="65"
+                value={split}
+                className="w-28 accent-accent"
+                onChange={(e) => setSplit(e.target.value)}
+              />
+            </label>
+          )}
           <div
             style={
               {
@@ -598,7 +739,7 @@ export default function ToolPage({
                 '--split-rest': `${100 - Number(split)}fr`,
               } as import('react').CSSProperties
             }
-            className={`grid min-w-0 gap-4 min-[56.25rem]:grid-cols-2 desktop:grid-cols-[minmax(0,var(--split))_minmax(0,var(--split-rest))]`}
+            className={`grid min-w-0 gap-4 ${binaryInput ? '' : 'min-[56.25rem]:grid-cols-2 desktop:grid-cols-[minmax(0,var(--split))_minmax(0,var(--split-rest))]'}`}
           >
             {previewSource ? (
               <section className="overflow-hidden rounded-panel border border-border bg-surface">
@@ -635,6 +776,7 @@ export default function ToolPage({
               </section>
             ) : (
               !noInputTools.has(tool.id) &&
+              !binaryInput &&
               tool.id !== 'color' && (
                 <Editor
                   label={t('common.input')}
@@ -681,7 +823,7 @@ export default function ToolPage({
               />
             </label>
           )}
-          {['json-diff', 'text-diff'].includes(tool.id) && (
+          {hasComparison && (
             <label className="flex items-center gap-2 text-xs text-secondary">
               <input
                 type="checkbox"
@@ -692,7 +834,7 @@ export default function ToolPage({
               {t('common.syncScroll')}
             </label>
           )}
-          {['json-diff', 'text-diff'].includes(tool.id) && (
+          {hasComparison && (
             <label className="block">
               <span className="mb-2 block text-xs font-medium">{t('common.second')}</span>
               <textarea
@@ -793,7 +935,13 @@ export default function ToolPage({
           {draft.result?.bytes && (
             <Button onClick={() => download(true)}>
               <Download size={14} />
-              {t('common.downloadBytes')}
+              {t(
+                tool.id === 'image-tools'
+                  ? 'common.downloadImage'
+                  : tool.id === 'text-encoding'
+                    ? 'common.downloadEncoded'
+                    : 'common.downloadBytes'
+              )}
             </Button>
           )}
           {draft.result?.preview && !preview && (
@@ -861,7 +1009,15 @@ export default function ToolPage({
             <p className="text-xs text-secondary">{t('common.sensitiveReset')}</p>
           )}
           {!noInputTools.has(tool.id) && (
-            <p className="text-[11px] text-secondary">{t('common.fileNote')}</p>
+            <p className="text-[11px] text-secondary">
+              {t(
+                binaryInput
+                  ? 'common.binaryFileNote'
+                  : tool.id === 'svg-tools'
+                    ? 'common.svgFileNote'
+                    : 'common.fileNote'
+              )}
+            </p>
           )}
         </>
       )}

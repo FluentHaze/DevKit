@@ -53,7 +53,7 @@ export function sortObject(value: unknown): unknown {
     );
   return value;
 }
-export function jsonDiff(a: unknown, b: unknown, path = '$'): unknown[] {
+export function jsonDiff(a: unknown, b: unknown, path = '$', identityKey = ''): unknown[] {
   if (Object.is(a, b)) return [];
   if (
     a === null ||
@@ -63,13 +63,46 @@ export function jsonDiff(a: unknown, b: unknown, path = '$'): unknown[] {
     typeof a !== 'object'
   )
     return [{ path, kind: 'changed', before: a, after: b }];
+  if (
+    identityKey &&
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    [...a, ...b].some((v: unknown) => v !== null && typeof v === 'object' && !Array.isArray(v))
+  ) {
+    const index = (items: unknown[]) => {
+      const result = new Map<string, unknown>();
+      for (const item of items) {
+        if (
+          !item ||
+          typeof item !== 'object' ||
+          Array.isArray(item) ||
+          !Object.hasOwn(item, identityKey)
+        )
+          fail('params');
+        const key: unknown = (item as Record<string, unknown>)[identityKey];
+        if (typeof key !== 'string' && typeof key !== 'number') fail('params');
+        const encoded = JSON.stringify(key);
+        if (result.has(encoded)) fail('duplicate');
+        result.set(encoded, item);
+      }
+      return result;
+    };
+    const left = index(a),
+      right = index(b);
+    return [...new Set([...left.keys(), ...right.keys()])].flatMap((key): unknown[] => {
+      const next = `${path}[${JSON.stringify(identityKey)}=${key}]`;
+      if (!left.has(key)) return [{ path: next, kind: 'added', after: right.get(key) }];
+      if (!right.has(key)) return [{ path: next, kind: 'removed', before: left.get(key) }];
+      return jsonDiff(left.get(key), right.get(key), next, identityKey);
+    });
+  }
   const left = a as Record<string, unknown>;
   const right = b as Record<string, unknown>;
   return [...new Set([...Object.keys(left), ...Object.keys(right)])].flatMap((key) => {
     const next = Array.isArray(a) ? `${path}[${key}]` : `${path}[${JSON.stringify(key)}]`;
     if (!Object.hasOwn(left, key)) return [{ path: next, kind: 'added', after: right[key] }];
     if (!Object.hasOwn(right, key)) return [{ path: next, kind: 'removed', before: left[key] }];
-    return jsonDiff(left[key], right[key], next);
+    return jsonDiff(left[key], right[key], next, identityKey);
   });
 }
 export function queryJson(root: unknown, query: string) {
@@ -250,7 +283,10 @@ export async function transformData(
         extension: 'json',
       };
     case 'json-diff':
-      return { text: stringify(jsonDiff(value, parseJson(secondary))), extension: 'json' };
+      return {
+        text: stringify(jsonDiff(value, parseJson(secondary), '$', String(p.identityKey ?? ''))),
+        extension: 'json',
+      };
     case 'json-path':
       return { text: stringify(queryJson(value, String(p.query))), extension: 'json' };
     case 'json-yaml': {

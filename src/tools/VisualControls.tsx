@@ -114,7 +114,7 @@ export default function VisualControls({ id, params, onChange, t, input, onInput
         <div className="flex flex-wrap items-end gap-3">
           <label className="text-xs">
             <span className="mb-1 block text-secondary">{t('fields.keyBits')}</span>
-            <Select value={keyBits} onChange={(e) => setKeyBits(e.target.value)}>
+            <Select aria-label={t('fields.keyBits')} value={keyBits} onValueChange={setKeyBits}>
               {['128', '192', '256'].map((bits) => (
                 <option key={bits} value={bits}>
                   {bits} bit
@@ -430,9 +430,10 @@ export default function VisualControls({ id, params, onChange, t, input, onInput
           <label className="flex items-center gap-3 text-xs">
             {t('common.selectedItem')}
             <Select
+              aria-label={t('common.selectedItem')}
               wrapperClassName="w-28 shrink-0"
               value={selectedItem}
-              onChange={(e) => setSelectedItem(Number(e.target.value))}
+              onValueChange={(value) => setSelectedItem(Number(value))}
             >
               {placement.map((_, i) => (
                 <option key={i} value={i}>

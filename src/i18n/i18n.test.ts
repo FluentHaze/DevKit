@@ -16,9 +16,9 @@ it('detects supported languages in preference order', () => {
   expect(detectLocale(['zh-TW'])).toBe('zh-CN');
   expect(detectLocale(['fr'])).toBe('zh-CN');
 });
-it('registers exactly 39 tools with translated metadata', () => {
-  expect(tools).toHaveLength(39);
-  expect(new Set(tools.map((t) => t.id)).size).toBe(39);
+it('registers exactly 49 tools with translated metadata', () => {
+  expect(tools).toHaveLength(49);
+  expect(new Set(tools.map((t) => t.id)).size).toBe(49);
   for (const tool of tools) {
     expect(translate('en', tool.titleKey)).not.toBe(tool.titleKey);
   }
