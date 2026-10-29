@@ -27,10 +27,21 @@ import { shortcutModifier } from '@/lib/keyboard';
 import { fields, defaults, noInputTools, sensitiveTools, visualTools, type Params } from './schema';
 import { tools, type Tool } from './registry';
 import VisualControls from './VisualControls';
+const CountdownPanel = lazy(() => import('./CountdownPanel'));
+const WheelPanel = lazy(() => import('./WheelPanel'));
+const TablePanel = lazy(() => import('./TablePanel'));
 const Reference = lazy(() => import('./Reference'));
 const CronDescription = lazy(() => import('./CronDescription'));
 const browserTools = new Set(['svg-tools', 'image-tools', 'qr-code']);
-const comparisonTools = new Set(['json-diff', 'text-diff', 'env-diff', 'i18n-check', 'url-parser']);
+const comparisonTools = new Set([
+  'document-diff',
+  'subtitle-tools',
+  'json-diff',
+  'text-diff',
+  'env-diff',
+  'i18n-check',
+  'url-parser',
+]);
 type Status = 'idle' | 'dirty' | 'running' | 'success' | 'error' | 'cancelled';
 interface Draft {
   input: string;
@@ -61,6 +72,27 @@ const initialDraft = (id: string): Draft => {
   );
 };
 const notices: Record<string, string> = {
+  'json-mock': 'help-json-mock',
+  'request-converter': 'help-request-converter',
+  openapi: 'help-openapi',
+  'sql-tools': 'help-sql-tools',
+  'format-converter': 'help-format-converter',
+  'text-analyzer': 'help-text-analyzer',
+  'css-converter': 'help-css-converter',
+  'table-generator': 'help-table-generator',
+  'text-cleaner': 'help-text-cleaner',
+  'document-diff': 'help-document-diff',
+  'subtitle-tools': 'help-subtitle-tools',
+  'text-redact': 'help-text-redact',
+  'password-generator': 'help-password-generator',
+  certificate: 'help-certificate',
+  'date-workbench': 'help-date-workbench',
+  'split-bill': 'help-split-bill',
+  'unit-converter': 'help-unit-converter',
+  lottery: 'help-lottery',
+  'link-tools': 'help-link-tools',
+  decision: 'help-decision',
+  workflow: 'help-workflow',
   jwt: 'notVerified',
   hash: 'legacyHash',
   aes: 'aesNote',
@@ -190,6 +222,7 @@ export default function ToolPage({
       !noInputTools.has(tool.id) &&
       !file &&
       tool.id !== 'image-tools' &&
+      !(tool.id === 'date-workbench' && draft.params.mode === 'countdown') &&
       !(tool.id === 'qr-code' && draft.params.mode === 'read-qr')
     ) {
       changeDraft({ status: 'idle', result: undefined });
@@ -646,6 +679,21 @@ export default function ToolPage({
                 locale={locale}
                 t={t}
               />
+            </Suspense>
+          )}
+          {tool.id === 'date-workbench' && draft.params.mode === 'countdown' && (
+            <Suspense fallback={<p>{t('common.running')}</p>}>
+              <CountdownPanel instant={String(draft.params.instant)} t={t} />
+            </Suspense>
+          )}
+          {tool.id === 'lottery' && (
+            <Suspense fallback={<p>{t('common.running')}</p>}>
+              <WheelPanel input={draft.input} result={draft.result} t={t} />
+            </Suspense>
+          )}
+          {tool.id === 'table-generator' && (
+            <Suspense fallback={<p>{t('common.running')}</p>}>
+              <TablePanel input={draft.input} onChange={(input) => modify({ input })} t={t} />
             </Suspense>
           )}
           {notice && (

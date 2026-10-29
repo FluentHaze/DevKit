@@ -29,7 +29,9 @@ import { detectLocale, initialLanguage, translate, type LanguagePreference } fro
 import { readPreference, savePreference, clearDrafts } from '@/lib/storage';
 import { shortcutModifier } from '@/lib/keyboard';
 import type { AppContext } from './context';
+import { workbenchIds } from '@/tools/workbench-config';
 const ToolPage = lazy(() => import('@/tools/ToolPage'));
+const WorkbenchPage = lazy(() => import('@/tools/WorkbenchPage'));
 type Theme = 'light' | 'dark' | 'system';
 type Recent = { id: string; time: number };
 const isStringList = (v: unknown): v is string[] =>
@@ -476,7 +478,11 @@ export default function App() {
           {tool ? (
             <ToolBoundary key={tool.id} t={t} onHome={() => navigate('/')}>
               <Suspense fallback={<p className="p-8 text-secondary">{t('common.running')}</p>}>
-                <ToolPage key={tool.id} tool={tool} {...context} />
+                {workbenchIds.has(tool.id) ? (
+                  <WorkbenchPage key={tool.id} tool={tool} {...context} />
+                ) : (
+                  <ToolPage key={tool.id} tool={tool} {...context} />
+                )}
               </Suspense>
             </ToolBoundary>
           ) : path !== '/' ? (

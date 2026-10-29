@@ -14,7 +14,7 @@ Node 版本和包管理器要求见 [README](../README.md)。不要无关升级�
 | 命令                | 用途                                                |
 | ------------------- | --------------------------------------------------- |
 | `pnpm dev`          | 本机开发服务器、热更新；不是离线验收服务器          |
-| `pnpm docs:check`   | 校验文档本地链接、49 项工具登记、参数和枚举模式覆盖 |
+| `pnpm docs:check`   | 校验文档本地链接、91 项工具登记、参数和枚举模式覆盖 |
 | `pnpm typecheck`    | TypeScript 无输出检查                               |
 | `pnpm lint`         | ESLint 逻辑、类型和 Hooks 规则                      |
 | `pnpm format:check` | 全仓 Prettier 检查；失败需区分本次与既有问题        |

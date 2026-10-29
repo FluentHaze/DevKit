@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import metadata from './metadata.json';
+import { workbenchIds } from './workbench-config';
 import { transform } from './transform';
 import { defaults } from './schema';
 import { parseJson, jsonDiff, queryJson } from './data';
@@ -204,7 +205,9 @@ describe('dates, regular expressions and CSS safety', () => {
 
 describe('all tool examples', () => {
   for (const tool of metadata.filter(
-    (item) => !['http-reference', 'svg-tools', 'image-tools', 'qr-code'].includes(item.id)
+    (item) =>
+      !workbenchIds.has(item.id) &&
+      !['http-reference', 'svg-tools', 'image-tools', 'qr-code'].includes(item.id)
   )) {
     it(`${tool.id} produces a real result`, async () => {
       const params: Record<string, string | boolean> = {};

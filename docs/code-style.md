@@ -93,3 +93,14 @@ public/                       # 本地静态资源
 ## 测试和文档
 
 Vitest 覆盖算法、示例、翻译、路由和性能样例；浏览器记录与自动测试分开。新增参数和模式同步[工具手册](tools.md)，共享架构或存储变化同步本文件及[验证记录](verification.md)。执行 `pnpm docs:check` 后仍需人工核对语义。
+
+TypeScript → JSON 的 AST 遍历在 typescript-json.ts 内完成，复用 Prettier 解析器，并通过深度和节点预算限制展开；保持现有 Worker 取消、超时和过期结果保护。
+
+## 批量与实时工作台
+
+- App 通过 workbench-config.ts 选择 WorkbenchPage，普通文本仍走 ToolPage；参数同用 schema 与自定义 Select。ParameterFields 复用字段类型与交互。
+- everyday.ts / developer-tools.ts 在普通 Worker 按需加载。file-workbench.ts 负责文件任务，workbench.worker.ts 可直接终止；PDF 合并/拆页在同一 Worker 中，PDF.js 渲染使用每任务独立 PDFWorker。
+- image-workbench.ts 使用 Canvas；media-workbench.ts 使用本地 AudioContext/Video/PDF.js。取消会释放 Worker、音频上下文、视频资源与对象 URL，原生解码可能不能即时中断，结果仍须检查 AbortSignal。
+- Markdown 防抖预览在文件 Worker 解析，主线程 DOMPurify 清理后进入禁脚本 iframe；允许 same-origin 与 modals 仅用于目录定位及浏览器打印，不开放脚本。
+- 工作台会话不写持久存储；输入/参数/文件变更使下载失效并释放 URL。文件仅下载处理后的副本，不改动磁盘原文件。
+- WebSocket 是唯一显式外部连接工具，切页关闭连接、清理监听，日志与地址不持久化；CSP 仅额外允许 ws/wss 连接及 blob 媒体。

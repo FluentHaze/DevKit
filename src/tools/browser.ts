@@ -150,7 +150,7 @@ function jsxNode(node: Node, depth = 1): string {
     : `${pad}${open} />`;
 }
 
-async function imageCanvas(file: File, signal: AbortSignal): Promise<HTMLCanvasElement> {
+export async function imageCanvas(file: File, signal: AbortSignal): Promise<HTMLCanvasElement> {
   if (
     !['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif', 'image/bmp'].includes(
       file.type

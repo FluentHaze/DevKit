@@ -65,8 +65,30 @@
 - 图片依赖本地 Canvas；二维码无需摄像头权限。编码工具使用 TextEncoder / TextDecoder；GBK 编码由严格解码建立可逆映射，不引入 Node Buffer / stream 垫片。
 - 混淆器浏览器包含上游 eval("require") getter，构建会警告；应用不调用该 getter、不执行用户源码。模块 Worker 为上游 Chance 的全局赋值预建属性，见 src/tools/text.ts。
 - CSP 不开放 JavaScript unsafe-eval；hash-wasm 的 WASM 编译单独使用 wasm-unsafe-eval。来源策略见 vite.config.ts。
-- 项目固定 pnpm 8.10.5，要求 Node >=22.12.0，CI 使用 Node 24；依赖升级后重新检查兼容性和许可证。
+- 项目固定 pnpm 8.10.5，要求 Node >=22.13.0，CI 使用 Node 24；依赖升级后重新检查兼容性和许可证。
 
 ## 新增或升级依赖
 
 说明用途、现有能力为何不足、浏览器和 Worker 入口、维护与许可证、体积和本地处理边界。安装后同时更新本表、锁文件、功能手册和验证记录。涉及上传、额外权限或隐私变化时先取得授权，见[开发指南](development.md)。
+
+TypeScript → JSON 示例复用已有 prettier/plugins/typescript 解析 AST，按需在 Worker 加载；未新增依赖或执行输入代码。
+
+## 2026-10-29 实用工作台依赖
+
+下面是本机安装及锁文件快照，并非上游最新版本声明；全部打包到本地资源，按工具载入。
+
+| 包                 | 安装版本 | 许可证       | 用途与官方来源                                                                                         |
+| ------------------ | -------- | ------------ | ------------------------------------------------------------------------------------------------------ |
+| `exceljs`          | 4.4.0    | MIT          | XLSX 读取/写入，仅浏览器入口，不保留原样式；[上游](https://github.com/exceljs/exceljs)                 |
+| `pdf-lib`          | 1.17.1   | MIT          | PDF 合并、提取与拆分；[上游](https://github.com/Hopding/pdf-lib)                                       |
+| `pdfjs-dist`       | 6.4.299  | Apache-2.0   | PDF 页面渲染；worker、字体、CMap、WASM 随站点构建；[上游](https://github.com/mozilla/pdf.js)           |
+| `fflate`           | 0.8.3    | MIT          | 批量结果 ZIP 打包；[上游](https://github.com/101arrowz/fflate)                                         |
+| `fast-xml-parser`  | 5.11.2   | MIT          | XML 解析/生成；拒绝 DTD/实体；[上游](https://github.com/NaturalIntelligence/fast-xml-parser)           |
+| `smol-toml`        | 1.9.1    | BSD-3-Clause | TOML 解析与生成；[上游](github:squirrelchat/smol-toml)                                                 |
+| `ini`              | 6.0.0    | ISC          | 简单 INI 节解析/生成；[上游](https://github.com/npm/ini)                                               |
+| `highlight.js`     | 11.12.0  | BSD-3-Clause | 代码卡片的本地语法高亮；[上游](git://github.com/highlightjs/highlight.js)                              |
+| `@peculiar/x509`   | 3.1.0    | MIT          | X.509 证书解析；不做信任链验证；[上游](https://github.com/PeculiarVentures/x509)                       |
+| `reflect-metadata` | 0.2.2    | Apache-2.0   | X.509 上游依赖要求的反射元数据，先于证书库初始化；[上游](https://github.com/rbuckton/reflect-metadata) |
+| `@types/ini`       | 4.1.1    | MIT          | INI 开发类型声明；[上游](https://github.com/DefinitelyTyped/DefinitelyTyped)                           |
+
+PDF.js 6 的构建环境要求使项目最低 Node 版本调整为 22.13，CI 与 .nvmrc 继续使用 Node 24。ExcelJS 上游存在弃用的传递依赖，未擅自替换其内部版本。完整离线缓存会比原版本更大；资源按工具加载，首页不直接载入 PDF/Excel 解析器。

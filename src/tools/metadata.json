@@ -442,7 +442,7 @@
   {
     "id": "image-tools",
     "slug": "image-tools",
-    "category": "css",
+    "category": "media",
     "order": 44,
     "titleKey": "tools.image-tools.title",
     "descriptionKey": "tools.image-tools.description",
@@ -488,5 +488,429 @@
     "descriptionKey": "tools.text-encoding.description",
     "keywords": ["文本编码检查与转换", "Text Encoding", "text-encoding"],
     "example": "Hello 世界\r\nDevKit​"
+  },
+  {
+    "id": "typescript-json",
+    "slug": "typescript-json",
+    "category": "data",
+    "order": 49,
+    "titleKey": "tools.typescript-json.title",
+    "descriptionKey": "tools.typescript-json.description",
+    "keywords": ["TypeScript → JSON", "interface", "type", "类型转JSON", "Mock"],
+    "example": "interface User {\n  id: number;\n  name: string;\n  active: boolean;\n  tags: string[];\n  profile?: { city: string };\n}\n"
+  },
+  {
+    "id": "json-mock",
+    "slug": "json-mock",
+    "category": "data",
+    "order": 50,
+    "titleKey": "tools.json-mock.title",
+    "descriptionKey": "tools.json-mock.description",
+    "keywords": ["JSON → Mock 数据", "JSON → Mock Data", "json-mock"],
+    "example": "{\"id\":1,\"name\":\"Ada\",\"email\":\"ada@example.com\",\"createdAt\":\"2026-01-01\",\"active\":true}"
+  },
+  {
+    "id": "request-converter",
+    "slug": "request-converter",
+    "category": "web",
+    "order": 51,
+    "titleKey": "tools.request-converter.title",
+    "descriptionKey": "tools.request-converter.description",
+    "keywords": ["请求代码互转", "Request Code Converter", "request-converter"],
+    "example": "fetch(\"https://example.com/users\", { method: \"POST\", headers: { \"Content-Type\": \"application/json\" }, body: JSON.stringify({name:\"Ada\"}) });"
+  },
+  {
+    "id": "openapi",
+    "slug": "openapi",
+    "category": "web",
+    "order": 52,
+    "titleKey": "tools.openapi.title",
+    "descriptionKey": "tools.openapi.description",
+    "keywords": ["OpenAPI 代码生成", "OpenAPI Code Generator", "openapi"],
+    "example": "{\"openapi\":\"3.0.3\",\"components\":{\"schemas\":{\"User\":{\"type\":\"object\",\"required\":[\"id\"],\"properties\":{\"id\":{\"type\":\"integer\"},\"name\":{\"type\":\"string\"}}}}},\"paths\":{\"/users\":{\"get\":{\"operationId\":\"listUsers\"}}}}"
+  },
+  {
+    "id": "websocket",
+    "slug": "websocket",
+    "category": "web",
+    "order": 53,
+    "titleKey": "tools.websocket.title",
+    "descriptionKey": "tools.websocket.description",
+    "keywords": ["WebSocket 调试", "WebSocket Debugger", "websocket"],
+    "example": ""
+  },
+  {
+    "id": "spreadsheet",
+    "slug": "spreadsheet",
+    "category": "data",
+    "order": 54,
+    "titleKey": "tools.spreadsheet.title",
+    "descriptionKey": "tools.spreadsheet.description",
+    "keywords": ["Excel / CSV 工作台", "Excel / CSV Workbench", "spreadsheet"],
+    "example": "[{\"name\":\"Ada\",\"score\":95},{\"name\":\"Lin\",\"score\":88}]"
+  },
+  {
+    "id": "sql-tools",
+    "slug": "sql-tools",
+    "category": "data",
+    "order": 55,
+    "titleKey": "tools.sql-tools.title",
+    "descriptionKey": "tools.sql-tools.description",
+    "keywords": ["SQL 数据工具", "SQL Data Tools", "sql-tools"],
+    "example": "[{\"id\":1,\"name\":\"Ada\"},{\"id\":2,\"name\":\"Lin\"}]"
+  },
+  {
+    "id": "format-converter",
+    "slug": "format-converter",
+    "category": "data",
+    "order": 56,
+    "titleKey": "tools.format-converter.title",
+    "descriptionKey": "tools.format-converter.description",
+    "keywords": [
+      "JSON / XML / YAML / TOML / INI",
+      "JSON / XML / YAML / TOML / INI",
+      "format-converter"
+    ],
+    "example": "{\"app\":{\"name\":\"DevKit\",\"port\":3000}}"
+  },
+  {
+    "id": "text-analyzer",
+    "slug": "text-analyzer",
+    "category": "text",
+    "order": 57,
+    "titleKey": "tools.text-analyzer.title",
+    "descriptionKey": "tools.text-analyzer.description",
+    "keywords": ["文本统计与重复分析", "Text Statistics & Duplicates", "text-analyzer"],
+    "example": "apple\nbanana\napple\n你好 DevKit"
+  },
+  {
+    "id": "image-css",
+    "slug": "image-css",
+    "category": "css",
+    "order": 58,
+    "titleKey": "tools.image-css.title",
+    "descriptionKey": "tools.image-css.description",
+    "keywords": ["图片 → Base64 / CSS", "Image → Base64 / CSS", "image-css"],
+    "example": ""
+  },
+  {
+    "id": "css-converter",
+    "slug": "css-converter",
+    "category": "css",
+    "order": 59,
+    "titleKey": "tools.css-converter.title",
+    "descriptionKey": "tools.css-converter.description",
+    "keywords": ["CSS 与对象转换", "CSS & Object Converter", "css-converter"],
+    "example": "font-size: 16px; margin-top: 24px; color: #0066cc;"
+  },
+  {
+    "id": "font-preview",
+    "slug": "font-preview",
+    "category": "css",
+    "order": 60,
+    "titleKey": "tools.font-preview.title",
+    "descriptionKey": "tools.font-preview.description",
+    "keywords": ["本地字体预览", "Local Font Preview", "font-preview"],
+    "example": "DevKit Aa Bb Cc\n你好，世界！0123456789"
+  },
+  {
+    "id": "table-generator",
+    "slug": "table-generator",
+    "category": "data",
+    "order": 61,
+    "titleKey": "tools.table-generator.title",
+    "descriptionKey": "tools.table-generator.description",
+    "keywords": ["HTML / Markdown 表格", "HTML / Markdown Table", "table-generator"],
+    "example": "[{\"name\":\"Ada\",\"role\":\"Developer\"},{\"name\":\"Lin\",\"role\":\"Designer\"}]"
+  },
+  {
+    "id": "image-batch",
+    "slug": "image-batch",
+    "category": "media",
+    "order": 62,
+    "titleKey": "tools.image-batch.title",
+    "descriptionKey": "tools.image-batch.description",
+    "keywords": ["图片批处理", "Batch Images", "image-batch"],
+    "example": ""
+  },
+  {
+    "id": "image-stitch",
+    "slug": "image-stitch",
+    "category": "media",
+    "order": 63,
+    "titleKey": "tools.image-stitch.title",
+    "descriptionKey": "tools.image-stitch.description",
+    "keywords": ["图片拼接", "Image Stitcher", "image-stitch"],
+    "example": ""
+  },
+  {
+    "id": "image-palette",
+    "slug": "image-palette",
+    "category": "media",
+    "order": 64,
+    "titleKey": "tools.image-palette.title",
+    "descriptionKey": "tools.image-palette.description",
+    "keywords": ["图片配色提取", "Image Color Palette", "image-palette"],
+    "example": ""
+  },
+  {
+    "id": "image-annotate",
+    "slug": "image-annotate",
+    "category": "media",
+    "order": 65,
+    "titleKey": "tools.image-annotate.title",
+    "descriptionKey": "tools.image-annotate.description",
+    "keywords": ["图片标注", "Image Annotations", "image-annotate"],
+    "example": "[{\"type\":\"rect\",\"x\":40,\"y\":40,\"width\":200,\"height\":100,\"color\":\"#ff3b30\"},{\"type\":\"text\",\"x\":60,\"y\":60,\"text\":\"DevKit\",\"color\":\"#ffffff\"}]"
+  },
+  {
+    "id": "markdown-workbench",
+    "slug": "markdown-workbench",
+    "category": "text",
+    "order": 66,
+    "titleKey": "tools.markdown-workbench.title",
+    "descriptionKey": "tools.markdown-workbench.description",
+    "keywords": ["Markdown 工作台", "Markdown Workbench", "markdown-workbench"],
+    "example": "# DevKit\n\n本地 Markdown 工作台。\n\n## Features\n\n- Live preview\n- HTML export\n- Print to PDF"
+  },
+  {
+    "id": "pdf-tools",
+    "slug": "pdf-tools",
+    "category": "files",
+    "order": 67,
+    "titleKey": "tools.pdf-tools.title",
+    "descriptionKey": "tools.pdf-tools.description",
+    "keywords": ["PDF 工作台", "PDF Workbench", "pdf-tools"],
+    "example": ""
+  },
+  {
+    "id": "text-cleaner",
+    "slug": "text-cleaner",
+    "category": "text",
+    "order": 68,
+    "titleKey": "tools.text-cleaner.title",
+    "descriptionKey": "tools.text-cleaner.description",
+    "keywords": ["文本清洗", "Text Cleaner", "text-cleaner"],
+    "example": "  Hello DevKit  \n\nＨｅｌｌｏ，世界！\nHello DevKit"
+  },
+  {
+    "id": "document-diff",
+    "slug": "document-diff",
+    "category": "text",
+    "order": 69,
+    "titleKey": "tools.document-diff.title",
+    "descriptionKey": "tools.document-diff.description",
+    "keywords": ["文档内容对比", "Document Content Diff", "document-diff"],
+    "example": "DevKit\nLocal tools\n"
+  },
+  {
+    "id": "audio-editor",
+    "slug": "audio-editor",
+    "category": "media",
+    "order": 70,
+    "titleKey": "tools.audio-editor.title",
+    "descriptionKey": "tools.audio-editor.description",
+    "keywords": ["音频裁剪与音量", "Audio Trim & Volume", "audio-editor"],
+    "example": ""
+  },
+  {
+    "id": "video-frames",
+    "slug": "video-frames",
+    "category": "media",
+    "order": 71,
+    "titleKey": "tools.video-frames.title",
+    "descriptionKey": "tools.video-frames.description",
+    "keywords": ["视频截图", "Video Frames", "video-frames"],
+    "example": ""
+  },
+  {
+    "id": "subtitle-tools",
+    "slug": "subtitle-tools",
+    "category": "text",
+    "order": 72,
+    "titleKey": "tools.subtitle-tools.title",
+    "descriptionKey": "tools.subtitle-tools.description",
+    "keywords": ["字幕格式与时间轴", "Subtitle Formats & Timing", "subtitle-tools"],
+    "example": "1\n00:00:01,000 --> 00:00:03,000\nHello DevKit\n"
+  },
+  {
+    "id": "file-rename",
+    "slug": "file-rename",
+    "category": "files",
+    "order": 73,
+    "titleKey": "tools.file-rename.title",
+    "descriptionKey": "tools.file-rename.description",
+    "keywords": ["批量重命名", "Batch File Rename", "file-rename"],
+    "example": ""
+  },
+  {
+    "id": "file-duplicates",
+    "slug": "file-duplicates",
+    "category": "files",
+    "order": 74,
+    "titleKey": "tools.file-duplicates.title",
+    "descriptionKey": "tools.file-duplicates.description",
+    "keywords": ["重复文件检测", "Duplicate File Finder", "file-duplicates"],
+    "example": ""
+  },
+  {
+    "id": "file-signature",
+    "slug": "file-signature",
+    "category": "files",
+    "order": 75,
+    "titleKey": "tools.file-signature.title",
+    "descriptionKey": "tools.file-signature.description",
+    "keywords": ["文件真实格式识别", "File Signature Inspector", "file-signature"],
+    "example": ""
+  },
+  {
+    "id": "text-redact",
+    "slug": "text-redact",
+    "category": "text",
+    "order": 76,
+    "titleKey": "tools.text-redact.title",
+    "descriptionKey": "tools.text-redact.description",
+    "keywords": ["文本脱敏", "Text Redaction", "text-redact"],
+    "example": "email=ada@example.com\nphone=13800138000\ntoken=demo-secret"
+  },
+  {
+    "id": "password-generator",
+    "slug": "password-generator",
+    "category": "generate",
+    "order": 77,
+    "titleKey": "tools.password-generator.title",
+    "descriptionKey": "tools.password-generator.description",
+    "keywords": ["密码与口令生成", "Passwords & Passphrases", "password-generator"],
+    "example": ""
+  },
+  {
+    "id": "certificate",
+    "slug": "certificate",
+    "category": "crypto",
+    "order": 78,
+    "titleKey": "tools.certificate.title",
+    "descriptionKey": "tools.certificate.description",
+    "keywords": ["X.509 证书解析", "X.509 Certificate Inspector", "certificate"],
+    "example": "-----BEGIN CERTIFICATE-----\nMIIBLTCB1aADAgECAgEBMAoGCCqGSM49BAMCMB8xHTAbBgNVBAMTFERldktpdCBM\nb2NhbCBFeGFtcGxlMB4XDTI2MDEwMTAwMDAwMFoXDTMwMDEwMTAwMDAwMFowHzEd\nMBsGA1UEAxMURGV2S2l0IExvY2FsIEV4YW1wbGUwWTATBgcqhkjOPQIBBggqhkjO\nPQMBBwNCAAQqwjjy46loKJ2GXS9C2PkvA2dFIEL1TpbHD4jxUKNcPfH840lOjjsr\n1Qa6kkeDBfx5J4y7qO1vsrKclfqVBnRgowIwADAKBggqhkjOPQQDAgNHADBEAiAe\nCLPCu+OxFTKOEK3V/WML/lNTfo93AUfJCXisB7M0ZwIgITTls5+rOLtLTOQ1cpsZ\nsygTFIKp3UCc1qfaRpwdesc=\n-----END CERTIFICATE-----"
+  },
+  {
+    "id": "date-workbench",
+    "slug": "date-workbench",
+    "category": "time",
+    "order": 79,
+    "titleKey": "tools.date-workbench.title",
+    "descriptionKey": "tools.date-workbench.description",
+    "keywords": ["时间与日期工作台", "Time & Date Workbench", "date-workbench"],
+    "example": "[\"Asia/Shanghai\",\"America/New_York\",\"Europe/London\"]"
+  },
+  {
+    "id": "split-bill",
+    "slug": "split-bill",
+    "category": "life",
+    "order": 80,
+    "titleKey": "tools.split-bill.title",
+    "descriptionKey": "tools.split-bill.description",
+    "keywords": ["多人分账", "Split Bills", "split-bill"],
+    "example": "[{\"paidBy\":\"Ada\",\"amount\":120,\"for\":[\"Ada\",\"Lin\",\"Grace\"]},{\"paidBy\":\"Lin\",\"amount\":60,\"for\":[\"Ada\",\"Lin\"]}]"
+  },
+  {
+    "id": "unit-converter",
+    "slug": "unit-converter",
+    "category": "life",
+    "order": 81,
+    "titleKey": "tools.unit-converter.title",
+    "descriptionKey": "tools.unit-converter.description",
+    "keywords": ["通用单位换算", "Unit Converter", "unit-converter"],
+    "example": "1000"
+  },
+  {
+    "id": "lottery",
+    "slug": "lottery",
+    "category": "life",
+    "order": 82,
+    "titleKey": "tools.lottery.title",
+    "descriptionKey": "tools.lottery.description",
+    "keywords": ["加权抽签", "Weighted Draw", "lottery"],
+    "example": "[{\"name\":\"A\",\"weight\":1},{\"name\":\"B\",\"weight\":3},{\"name\":\"C\",\"weight\":2}]"
+  },
+  {
+    "id": "pixel-editor",
+    "slug": "pixel-editor",
+    "category": "css",
+    "order": 83,
+    "titleKey": "tools.pixel-editor.title",
+    "descriptionKey": "tools.pixel-editor.description",
+    "keywords": ["像素画编辑器", "Pixel Art Editor", "pixel-editor"],
+    "example": "[[\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\"],[\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\"],[\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\"],[\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\",\"transparent\"],[\"transparent\",\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\",\"transparent\"],[\"#0066cc\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"transparent\",\"#0066cc\"]]"
+  },
+  {
+    "id": "ascii-art",
+    "slug": "ascii-art",
+    "category": "media",
+    "order": 84,
+    "titleKey": "tools.ascii-art.title",
+    "descriptionKey": "tools.ascii-art.description",
+    "keywords": ["图片 → ASCII 字符画", "Image → ASCII Art", "ascii-art"],
+    "example": ""
+  },
+  {
+    "id": "screenshot-beautify",
+    "slug": "screenshot-beautify",
+    "category": "media",
+    "order": 85,
+    "titleKey": "tools.screenshot-beautify.title",
+    "descriptionKey": "tools.screenshot-beautify.description",
+    "keywords": ["截图美化", "Screenshot Beautifier", "screenshot-beautify"],
+    "example": ""
+  },
+  {
+    "id": "code-card",
+    "slug": "code-card",
+    "category": "css",
+    "order": 86,
+    "titleKey": "tools.code-card.title",
+    "descriptionKey": "tools.code-card.description",
+    "keywords": ["代码卡片", "Code Image Cards", "code-card"],
+    "example": "const greeting = \"Hello, DevKit!\";\nconsole.log(greeting);"
+  },
+  {
+    "id": "link-tools",
+    "slug": "link-tools",
+    "category": "web",
+    "order": 87,
+    "titleKey": "tools.link-tools.title",
+    "descriptionKey": "tools.link-tools.description",
+    "keywords": ["链接工具箱", "Link Toolbox", "link-tools"],
+    "example": "https://example.com/docs?lang=zh\nhttps://example.com/tools"
+  },
+  {
+    "id": "decision",
+    "slug": "decision",
+    "category": "life",
+    "order": 88,
+    "titleKey": "tools.decision.title",
+    "descriptionKey": "tools.decision.description",
+    "keywords": ["加权决策评分", "Weighted Decision", "decision"],
+    "example": "{\"weights\":{\"cost\":3,\"quality\":7},\"options\":[{\"name\":\"A\",\"scores\":{\"cost\":8,\"quality\":6}},{\"name\":\"B\",\"scores\":{\"cost\":5,\"quality\":9}}]}"
+  },
+  {
+    "id": "browser-check",
+    "slug": "browser-check",
+    "category": "web",
+    "order": 89,
+    "titleKey": "tools.browser-check.title",
+    "descriptionKey": "tools.browser-check.description",
+    "keywords": ["浏览器环境体检", "Browser Environment Inspector", "browser-check"],
+    "example": ""
+  },
+  {
+    "id": "workflow",
+    "slug": "workflow",
+    "category": "data",
+    "order": 90,
+    "titleKey": "tools.workflow.title",
+    "descriptionKey": "tools.workflow.description",
+    "keywords": ["快捷工作流", "Tool Workflows", "workflow"],
+    "example": "{\"name\":\"Ada\",\"active\":true}"
   }
 ]

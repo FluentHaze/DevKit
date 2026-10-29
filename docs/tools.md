@@ -1,6 +1,6 @@
 # 工具功能手册
 
-核对日期：2026-10-29。当前为 7 类、49 个稳定入口。“已实现”表示已有代码能力，不等于完成全部发布验收；验证覆盖范围见[验证记录](verification.md)。参数来自 [schema.ts](../src/tools/schema.ts)，标题和示例来自[元数据](../src/tools/metadata.json)。
+核对日期：2026-10-29。当前为 10 类、91 个稳定入口。“已实现”表示已有代码能力，不等于完成全部发布验收；验证覆盖范围见[验证记录](verification.md)。参数来自 [schema.ts](../src/tools/schema.ts)，标题和示例来自[元数据](../src/tools/metadata.json)。
 
 ## 阅读说明
 
@@ -12,13 +12,16 @@
 
 ## 分类索引
 
-- **JSON 与数据（10）**：`json-formatter`、`json-escape`、`json-diff`、`json-path`、`json-yaml`、`json-csv`、`json-typescript`、`json-schema`、`json-reshape`、`i18n-check`。
-- **编码与加密（7）**：`base64`、`url-codec`、`unicode-html`、`hash`、`aes`、`hmac`、`jwt`。
-- **时间与日期（4）**：`timestamp`、`timezone`、`date-calculator`、`cron`。
-- **代码与文本（9）**：`code-formatter`、`code-minifier`、`js-obfuscator`、`text-diff`、`regex`、`text-batch`、`string-case`、`env-diff`、`text-encoding`。
-- **CSS 与视觉（10）**：`color`、`gradient`、`shadow`、`radius`、`flex`、`grid`、`css-units`、`animation`、`svg-tools`、`image-tools`。
-- **URL 与接口（5）**：`url-parser`、`curl-converter`、`http-reference`、`request-params`、`har-analyzer`。
-- **生成器与数值（4）**：`random`、`radix`、`mock-data`、`qr-code`。
+- **JSON 与数据（17）**：`json-formatter`、`json-escape`、`json-diff`、`json-path`、`json-yaml`、`json-csv`、`json-typescript`、`json-schema`、`json-reshape`、`i18n-check`、`typescript-json`、`json-mock`、`spreadsheet`、`sql-tools`、`format-converter`、`table-generator`、`workflow`。
+- **编码与加密（8）**：`base64`、`url-codec`、`unicode-html`、`hash`、`aes`、`hmac`、`jwt`、`certificate`。
+- **时间与日期（5）**：`timestamp`、`timezone`、`date-calculator`、`cron`、`date-workbench`。
+- **代码与文本（15）**：`code-formatter`、`code-minifier`、`js-obfuscator`、`text-diff`、`regex`、`text-batch`、`string-case`、`env-diff`、`text-encoding`、`text-analyzer`、`markdown-workbench`、`text-cleaner`、`document-diff`、`subtitle-tools`、`text-redact`。
+- **CSS 与视觉（14）**：`color`、`gradient`、`shadow`、`radius`、`flex`、`grid`、`css-units`、`animation`、`svg-tools`、`image-css`、`css-converter`、`font-preview`、`pixel-editor`、`code-card`。
+- **URL 与接口（10）**：`url-parser`、`curl-converter`、`http-reference`、`request-params`、`har-analyzer`、`request-converter`、`openapi`、`websocket`、`link-tools`、`browser-check`。
+- **生成器与数值（5）**：`random`、`radix`、`mock-data`、`qr-code`、`password-generator`。
+- **图片与音视频（9）**：`image-tools`、`image-batch`、`image-stitch`、`image-palette`、`image-annotate`、`audio-editor`、`video-frames`、`ascii-art`、`screenshot-beautify`。
+- **文件与文档（4）**：`pdf-tools`、`file-rename`、`file-duplicates`、`file-signature`。
+- **生活与决策（4）**：`split-bill`、`unit-converter`、`lottery`、`decision`。
 
 ## JSON 与数据
 
@@ -265,6 +268,177 @@ Hello "DevKit"
 { "hello": "Hello {name}", "save": "Save", "menu": { "home": "Home" } }
 ```
 
+### `typescript-json` · TypeScript → JSON 示例
+
+**状态**：已实现。**路由**：`/tools/typescript-json`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：从 TypeScript 类型生成可复制、下载的 JSON 示例。
+- **输入**：一个或多个 interface / type 声明，可带 export；相关类型需一并粘贴。
+- **输出**：缩进 JSON；string 为 example，number 为 1，boolean 为 true，字面量保留原值。
+- **使用注解与限制**：rootName 留空使用第一个声明；支持对象、只读属性、可选属性、数组、Array / ReadonlyArray、元组、本地类型引用、interface extends、无冲突的对象交叉类型。联合类型取首个非 undefined 分支，包括 null；可选字段默认包含。数组数量 0–20，元组保持其固定结构。只解析 AST，不执行代码。循环引用、缺失引用、语法错误明确报错；不支持泛型声明、工具类型、索引签名、函数、类、枚举、条件/映射类型、any/unknown/never/undefined 独立值、导入和运行时代码。仅遍历选中的联合分支和实际生成的可选字段；未使用声明不做类型检查。并非完整 TypeScript 编译器或业务数据生成器。输入上限 5 MiB；生成节点上限 20000、深度上限 60。
+- **实现**：[typescript-json.ts](../src/tools/typescript-json.ts)，复用 Prettier TypeScript AST 解析器与现有 Worker。
+
+**参数**：
+
+| 参数键 / 界面名称                | 默认值 | 可选值或类型 |
+| -------------------------------- | ------ | ------------ |
+| `rootName` · 根类型名            | ""     | 文本         |
+| `includeOptional` · 包含可选字段 | `true` | 布尔值       |
+| `arrayCount` · 数组元素数量      | `1`    | 整数 0–20    |
+
+**示例输入**：
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  active: boolean;
+  tags: string[];
+  profile?: { city: string };
+}
+```
+
+### `json-mock` · JSON → Mock 数据
+
+**状态**：已实现。**路由**：`/tools/json-mock`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：JSON → Mock 数据。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：按 JSON 样例结构生成最多 1000 条确定性测试数据；字段名识别邮箱、日期、姓名和 ID，其他值按固定规则替换，不是业务模型推断。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键  | 默认值 | 可选值或类型 |
+| ------- | ------ | ------------ |
+| `count` | `10`   | number       |
+
+**示例输入**：
+
+```text
+{"id":1,"name":"Ada","email":"ada@example.com","createdAt":"2026-01-01","active":true}
+```
+
+### `spreadsheet` · Excel / CSV 工作台
+
+**状态**：已实现。**路由**：`/tools/spreadsheet`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：Excel / CSV 工作台。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：打开 XLSX/CSV 或输入 JSON 对象数组，支持多文件按相同表头合并、去重、列选择、包含筛选、拆分导出。XLSX 公式只读取缓存结果；不保留样式或宏。最多 10000 行、200 列，导出表格对公式字符加单引号。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键         | 默认值   | 可选值或类型          |
+| -------------- | -------- | --------------------- |
+| `format`       | `"json"` | `json`、`csv`、`xlsx` |
+| `sheet`        | `1`      | number                |
+| `unique`       | `false`  | checkbox              |
+| `columnNames`  | `""`     | text                  |
+| `filterColumn` | `""`     | text                  |
+| `filterValue`  | `""`     | text                  |
+| `chunk`        | `0`      | number                |
+
+**示例输入**：
+
+```text
+[{"name":"Ada","score":95},{"name":"Lin","score":88}]
+```
+
+### `sql-tools` · SQL 数据工具
+
+**状态**：已实现。**路由**：`/tools/sql-tools`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：SQL 数据工具。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：JSON 转 INSERT 使用标准双引号标识符和字符串转义；简单 CREATE TABLE 转类型；问号参数填充跳过 SQL 引号与注释，只用于查看。DDL 不支持表级约束与复杂方言，不连接数据库。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[developer-tools.ts](../src/tools/developer-tools.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键   | 默认值          | 可选值或类型                  |
+| -------- | --------------- | ----------------------------- |
+| `mode`   | `"insert"`      | `insert`、`ddl-types`、`fill` |
+| `table`  | `"users"`       | text                          |
+| `values` | `"[1,\"Ada\"]"` | textarea                      |
+
+**示例输入**：
+
+```text
+[{"id":1,"name":"Ada"},{"id":2,"name":"Lin"}]
+```
+
+### `format-converter` · JSON / XML / YAML / TOML / INI
+
+**状态**：已实现。**路由**：`/tools/format-converter`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：JSON / XML / YAML / TOML / INI。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：结构化格式互转；XML 使用 @ 前缀属性表示，禁用 DTD/实体。目标格式不一定能表达所有 JSON 结构；INI 只支持简单键及一级节。格式转换可能改变注释、日期或数值表示，需核对输出。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[developer-tools.ts](../src/tools/developer-tools.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键         | 默认值   | 可选值或类型                         |
+| -------------- | -------- | ------------------------------------ |
+| `sourceFormat` | `"json"` | `json`、`xml`、`yaml`、`toml`、`ini` |
+| `outputFormat` | `"yaml"` | `yaml`、`json`、`xml`、`toml`、`ini` |
+
+**示例输入**：
+
+```text
+{"app":{"name":"DevKit","port":3000}}
+```
+
+### `table-generator` · HTML / Markdown 表格
+
+**状态**：已实现。**路由**：`/tools/table-generator`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：HTML / Markdown 表格。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：编辑 JSON 对象数组生成 HTML 或 Markdown 表格，列取所有行键的并集；可视编辑最多 100 行，大数据继续用文本编辑器；HTML 单元格转义，不执行用户内容。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键   | 默认值   | 可选值或类型       |
+| -------- | -------- | ------------------ |
+| `format` | `"html"` | `html`、`markdown` |
+
+**示例输入**：
+
+```text
+[{"name":"Ada","role":"Developer"},{"name":"Lin","role":"Designer"}]
+```
+
+### `workflow` · 快捷工作流
+
+**状态**：已实现。**路由**：`/tools/workflow`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：快捷工作流。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：按 steps 数组串联最多 10 个文本转换，仅允许内置安全转换白名单；每一步有 tool 与可选 params，不执行脚本或联网。支持 CSV→JSON→TypeScript 等流程；批量图片使用图片批处理工具。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键          | 默认值                                                                                                                                                                                                             | 可选值或类型 |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| `workflowSteps` | `"[\n  {\n    \"tool\": \"json-formatter\",\n    \"params\": {\n      \"mode\": \"format\"\n    }\n  },\n  {\n    \"tool\": \"json-typescript\",\n    \"params\": {\n      \"rootName\": \"Root\"\n    }\n  }\n]"` | textarea     |
+
+**示例输入**：
+
+```text
+{"name":"Ada","active":true}
+```
+
 ## 编码与加密
 
 ### `base64` · Base64
@@ -366,7 +540,7 @@ hello
 - **用途**：使用原始密钥进行 AES-GCM / CBC 加解密。
 - **输入**：文本、结构化密文包或 Base64 密文。
 - **输出**：完整密文 JSON 包或解密文本。
-- **使用注解与限制**：使用 HEX / Base64 原始密钥，支持 128 / 192 / 256 位。每次加密随机 IV；GCM 为 12 字节 IV、128 位 tag，CBC 为 16 字节 IV、PKCS#7。不是密码派生工具；认证失败不输出部分明文。
+- **使用注解与限制**：使用 HEX / Base64 原始密钥，支持 128 / 191 / 256 位。每次加密随机 IV；GCM 为 12 字节 IV、128 位 tag，CBC 为 16 字节 IV、PKCS#7。不是密码派生工具；认证失败不输出部分明文。
 - **实现**：[crypto.ts](../src/tools/crypto.ts)；共用界面与调度见 [ToolPage.tsx](../src/tools/ToolPage.tsx)。
 
 **参数**（模式相关参数在对应模式才生效）：
@@ -429,6 +603,34 @@ Hello DevKit
 
 ```text
 eyJhbGciOiJub25lIn0.eyJzdWIiOiJkZXZraXQiLCJpYXQiOjE3MDAwMDAwMDAsImV4cCI6MTczMDAwMDAwMH0.
+```
+
+### `certificate` · X.509 证书解析
+
+**状态**：已实现。**路由**：`/tools/certificate`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：X.509 证书解析。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：解析 PEM X.509 的主体、签发者、序列号、有效期、签名算法和 SHA-256 指纹。仅解析及到期检查，不验证信任链、签名、吊销或域名。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[developer-tools.ts](../src/tools/developer-tools.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+**示例输入**：
+
+```text
+-----BEGIN CERTIFICATE-----
+MIIBLTCB1aADAgECAgEBMAoGCCqGSM49BAMCMB8xHTAbBgNVBAMTFERldktpdCBM
+b2NhbCBFeGFtcGxlMB4XDTI2MDEwMTAwMDAwMFoXDTMwMDEwMTAwMDAwMFowHzEd
+MBsGA1UEAxMURGV2S2l0IExvY2FsIEV4YW1wbGUwWTATBgcqhkjOPQIBBggqhkjO
+PQMBBwNCAAQqwjjy46loKJ2GXS9C2PkvA2dFIEL1TpbHD4jxUKNcPfH840lOjjsr
+1Qa6kkeDBfx5J4y7qO1vsrKclfqVBnRgowIwADAKBggqhkjOPQQDAgNHADBEAiAe
+CLPCu+OxFTKOEK3V/WML/lNTfo93AUfJCXisB7M0ZwIgITTls5+rOLtLTOQ1cpsZ
+sygTFIKp3UCc1qfaRpwdesc=
+-----END CERTIFICATE-----
 ```
 
 ## 时间与日期
@@ -526,6 +728,29 @@ eyJhbGciOiJub25lIn0.eyJzdWIiOiJkZXZraXQiLCJpYXQiOjE3MDAwMDAwMDAsImV4cCI6MTczMDAw
 
 ```text
 */15 * * * *
+```
+
+### `date-workbench` · 时间与日期工作台
+
+**状态**：已实现。**路由**：`/tools/date-workbench`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：时间与日期工作台。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：同一明确时刻跨时区比较，或计算距离目标的秒数快照。倒计时面板实时更新并可暂停，导出为运行时快照；日期差与日期计算继续使用原有日期工具。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键    | 默认值                        | 可选值或类型         |
+| --------- | ----------------------------- | -------------------- |
+| `mode`    | `"zones"`                     | `zones`、`countdown` |
+| `instant` | `"2026-10-29T12:00:00+08:00"` | text                 |
+
+**示例输入**：
+
+```text
+["Asia/Shanghai","America/New_York","Europe/London"]
 ```
 
 ## 代码与文本
@@ -753,6 +978,164 @@ Hello 世界
 DevKit​
 ```
 
+### `text-analyzer` · 文本统计与重复分析
+
+**状态**：已实现。**路由**：`/tools/text-analyzer`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：文本统计与重复分析。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：统计 Unicode 字符、UTF-8 字节、单词片段、行数与重复行。分组报告最多 10000 项；分词采用字母数字片段，不是中文语义分词。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+`mode` 默认 `statistics`，可选 `statistics` / `extract` / `group`。`extractFields` 默认 `"name,email"`，`groupKey` 默认 `"team"`，`sumKey` 默认 `""`。提取和分组模式输入 JSON 对象数组，最多 10000 行；分组可附加数值字段求和。
+
+**示例输入**：
+
+```text
+apple
+banana
+apple
+你好 DevKit
+```
+
+### `markdown-workbench` · Markdown 工作台
+
+**状态**：已实现。**路由**：`/tools/markdown-workbench`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：Markdown 工作台。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：实时预览 Markdown，导出安全 HTML，通过浏览器打印保存 PDF；标题生成目录。预览移除脚本、外链资源与表单，不加载远程图片，不支持执行代码。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+**示例输入**：
+
+```text
+# DevKit
+
+本地 Markdown 工作台。
+
+## Features
+
+- Live preview
+- HTML export
+- Print to PDF
+```
+
+### `text-cleaner` · 文本清洗
+
+**状态**：已实现。**路由**：`/tools/text-cleaner`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：文本清洗。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：清理行首尾空格、空行与重复行，Unicode NFC/NFKC 规范化，常用中文标点转 ASCII。NFKC 会改变全角等兼容字符。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键          | 默认值       | 可选值或类型          |
+| --------------- | ------------ | --------------------- |
+| `normalization` | `"none"`     | `none`、`NFC`、`NFKC` |
+| `trimLines`     | `true`       | checkbox              |
+| `removeBlank`   | `false`      | checkbox              |
+| `unique`        | `false`      | checkbox              |
+| `punctuation`   | `"preserve"` | `preserve`、`ascii`   |
+
+**示例输入**：
+
+```text
+  Hello DevKit
+
+Ｈｅｌｌｏ，世界！
+Hello DevKit
+```
+
+### `document-diff` · 文档内容对比
+
+**状态**：已实现。**路由**：`/tools/document-diff`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：文档内容对比。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：文本按行或词比较，导出差异；可粘贴 CSV/表格提取文本比较。不是 DOCX/PDF 二进制文档或排版对比。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键 | 默认值    | 可选值或类型     |
+| ------ | --------- | ---------------- |
+| `mode` | `"lines"` | `lines`、`words` |
+
+**示例输入**：
+
+```text
+DevKit
+Local tools
+
+```
+
+### `subtitle-tools` · 字幕格式与时间轴
+
+**状态**：已实现。**路由**：`/tools/subtitle-tools`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：字幕格式与时间轴。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：SRT/VTT 互转、时间整体偏移、按完全相同时间轴合并双语字幕。负时间拒绝；不保留 VTT 样式、定位与提示 ID，不支持复杂 NOTE/STYLE 块。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键   | 默认值      | 可选值或类型       |
+| -------- | ----------- | ------------------ |
+| `mode`   | `"convert"` | `convert`、`merge` |
+| `format` | `"srt"`     | `srt`、`vtt`       |
+| `offset` | `0`         | number             |
+
+**示例输入**：
+
+```text
+1
+00:00:01,000 --> 00:00:03,000
+Hello DevKit
+
+```
+
+### `text-redact` · 文本脱敏
+
+**状态**：已实现。**路由**：`/tools/text-redact`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：文本脱敏。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：按规则替换邮箱、中国大陆手机号、18 位身份证样式及常见 token/password 字段。规则可能漏报或误报，分享前检查；不保存草稿。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键     | 默认值 | 可选值或类型 |
+| ---------- | ------ | ------------ |
+| `email`    | `true` | checkbox     |
+| `phone`    | `true` | checkbox     |
+| `identity` | `true` | checkbox     |
+| `token`    | `true` | checkbox     |
+
+**示例输入**：
+
+```text
+email=ada@example.com
+phone=13800138000
+token=demo-secret
+```
+
 ## CSS 与视觉
 
 ### `color` · 颜色工作台
@@ -958,26 +1341,118 @@ DevKit​
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#0066cc" /></svg>
 ```
 
-### `image-tools` · 图片压缩与转换
+### `image-css` · 图片 → Base64 / CSS
 
-**状态**：已实现。**路由**：`/tools/image-tools`。**持久草稿**：用户主动开启后可保存文本与参数。
+**状态**：已实现。**路由**：`/tools/image-css`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
 
-- **用途**：本地缩放并转换 PNG、JPEG、WebP，比较输出体积。
-- **输入**：本地 PNG、JPEG、WebP、GIF、AVIF 或 BMP。
-- **输出**：PNG、JPEG、WebP 文件及预览和统计。
-- **使用注解与限制**：最多 20 MiB / 3200 万像素，按 width / height 等比缩小、不放大；质量 0.1–1，PNG 通常不受质量参数影响。输出静态帧，不保留原始元数据，JPEG 白底；能力取决于浏览器编码支持。
-- **实现**：[browser.ts](../src/tools/browser.ts)；共用界面与调度见 [ToolPage.tsx](../src/tools/ToolPage.tsx)。
+- **用途**：图片 → Base64 / CSS。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：本地 PNG/JPEG/WebP/GIF/AVIF 转 Data URI 或 CSS background-image；单文件最多 5 MiB，不执行 SVG。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
 
-**参数**（模式相关参数在对应模式才生效）：
+**参数**：
 
-| 参数键 / 界面名称             | 默认值   | 可选值或类型               |
-| ----------------------------- | -------- | -------------------------- |
-| `format` · 格式               | `"webp"` | `webp`、`jpeg`、`png`      |
-| `width` · 最大宽度（px）      | `"1920"` | 数字，范围见说明与运行校验 |
-| `height` · 最大高度（px）     | `"1080"` | 数字，范围见说明与运行校验 |
-| `quality` · 图片质量（0.1–1） | `"0.8"`  | 数字，范围见说明与运行校验 |
+| 参数键 | 默认值       | 可选值或类型      |
+| ------ | ------------ | ----------------- |
+| `mode` | `"data-uri"` | `data-uri`、`css` |
 
-**示例入口**：点击“载入示例”生成本地 PNG，再运行并下载图片。
+### `css-converter` · CSS 与对象转换
+
+**状态**：已实现。**路由**：`/tools/css-converter`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：CSS 与对象转换。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：输入 CSS 声明列表或 JSON 样式对象；支持驼峰转换、px→rem 和属性排序。CSS→对象拒绝重复属性与 !important；不执行 JavaScript。仅声明列表，不接受完整样式表。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[developer-tools.ts](../src/tools/developer-tools.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键     | 默认值        | 可选值或类型                               |
+| ---------- | ------------- | ------------------------------------------ |
+| `mode`     | `"css-to-js"` | `css-to-js`、`js-to-css`、`px-rem`、`sort` |
+| `rootSize` | `16`          | number                                     |
+
+**示例输入**：
+
+```text
+font-size: 16px; margin-top: 24px; color: #0066cc;
+```
+
+### `font-preview` · 本地字体预览
+
+**状态**：已实现。**路由**：`/tools/font-preview`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：本地字体预览。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：导入本地 WOFF/WOFF2/TTF/OTF，实时调整字号、字重与行高；最大 10 MiB。切页释放字体，不上传或安装系统字体。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键       | 默认值 | 可选值或类型 |
+| ------------ | ------ | ------------ |
+| `fontSize`   | `36`   | number       |
+| `fontWeight` | `400`  | number       |
+| `lineHeight` | `1.6`  | number       |
+
+**示例输入**：
+
+```text
+DevKit Aa Bb Cc
+你好，世界！0123456789
+```
+
+### `pixel-editor` · 像素画编辑器
+
+**状态**：已实现。**路由**：`/tools/pixel-editor`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：像素画编辑器。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：点击网格画点、选色或擦除；支持编辑正方形颜色矩阵，最大 32×32，导出 PNG 与 box-shadow CSS。空白网格为 16×16，缩放 1–40。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键  | 默认值 | 可选值或类型 |
+| ------- | ------ | ------------ |
+| `scale` | `20`   | number       |
+
+**示例输入**：
+
+```text
+[["#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc"],["transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent"],["transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent"],["transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent"],["transparent","transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent","transparent"],["transparent","transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent","transparent"],["transparent","#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc","transparent"],["#0066cc","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","transparent","#0066cc"]]
+```
+
+### `code-card` · 代码卡片
+
+**状态**：已实现。**路由**：`/tools/code-card`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：代码卡片。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：本地语法高亮、行号、窗口标题与背景，导出 PNG。最多 300 行/50000 字符；长行受画布上限约束，不执行代码。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键       | 默认值         | 可选值或类型                                                       |
+| ------------ | -------------- | ------------------------------------------------------------------ |
+| `language`   | `"javascript"` | `javascript`、`typescript`、`json`、`css`、`html`、`python`、`sql` |
+| `fontSize`   | `18`           | number                                                             |
+| `padding`    | `40`           | number                                                             |
+| `title`      | `"DevKit"`     | text                                                               |
+| `background` | `"#0066cc"`    | text                                                               |
+
+**示例输入**：
+
+```text
+const greeting = "Hello, DevKit!";
+console.log(greeting);
+```
 
 ## URL 与接口
 
@@ -1104,6 +1579,102 @@ name=DevKit&tag=local&tag=private
 }
 ```
 
+### `request-converter` · 请求代码互转
+
+**状态**：已实现。**路由**：`/tools/request-converter`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：请求代码互转。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：支持 cURL、字面量 fetch 与 axios(config)，输出 fetch/Axios/cURL/Python；不执行请求。支持 axios.get/post 等常见快捷方法；拒绝变量、模板表达式和未支持的选项；不会自动脱敏。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[developer-tools.ts](../src/tools/developer-tools.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键   | 默认值    | 可选值或类型                       |
+| -------- | --------- | ---------------------------------- |
+| `target` | `"fetch"` | `fetch`、`axios`、`curl`、`python` |
+
+**示例输入**：
+
+```text
+fetch("https://example.com/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({name:"Ada"}) });
+```
+
+### `openapi` · OpenAPI 代码生成
+
+**状态**：已实现。**路由**：`/tools/openapi`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：OpenAPI 代码生成。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：支持 OpenAPI 3.x JSON 的组件类型、本地 schemas 引用与请求骨架；不解析 YAML、外部引用，不自动填充路径、鉴权、请求体或生成完整 SDK。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[developer-tools.ts](../src/tools/developer-tools.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键 | 默认值    | 可选值或类型        |
+| ------ | --------- | ------------------- |
+| `mode` | `"types"` | `types`、`requests` |
+
+**示例输入**：
+
+```text
+{"openapi":"3.0.3","components":{"schemas":{"User":{"type":"object","required":["id"],"properties":{"id":{"type":"integer"},"name":{"type":"string"}}}}},"paths":{"/users":{"get":{"operationId":"listUsers"}}}}
+```
+
+### `websocket` · WebSocket 调试
+
+**状态**：已实现。**路由**：`/tools/websocket`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：WebSocket 调试。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：仅点击连接后与填写的服务器通信；HTTPS 页面使用 wss。浏览器不能自定义握手 Headers，受服务器来源策略限制。日志只留在内存，最多 200 条；切页断开。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+### `link-tools` · 链接工具箱
+
+**状态**：已实现。**路由**：`/tools/link-tools`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：链接工具箱。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：从文本提取 HTTP(S) 链接或批量追加查询参数，保留已有重复参数；不访问目标地址。解析与二维码沿用原有工具。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键  | 默认值                | 可选值或类型        |
+| ------- | --------------------- | ------------------- |
+| `mode`  | `"extract"`           | `extract`、`append` |
+| `query` | `"utm_source=devkit"` | text                |
+
+**示例输入**：
+
+```text
+https://example.com/docs?lang=zh
+https://example.com/tools
+```
+
+### `browser-check` · 浏览器环境体检
+
+**状态**：已实现。**路由**：`/tools/browser-check`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：浏览器环境体检。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：查看浏览器、视口、能力、存储估计和已知权限状态；不弹权限申请，不上传报告。信息可能暴露设备特征，分享前检查。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
 ## 生成器与数值
 
 ### `random` · UUID / 随机字符串
@@ -1193,4 +1764,359 @@ name=DevKit&tag=local&tag=private
 
 ```text
 https://example.com/devkit
+```
+
+### `password-generator` · 密码与口令生成
+
+**状态**：已实现。**路由**：`/tools/password-generator`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：密码与口令生成。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：使用 Web Crypto 无偏随机生成密码，启用的字符类至少各含一个；或从内置约百词表生成 4–12 词口令。词表较小，不提供强度认证；不保存草稿。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键    | 默认值       | 可选值或类型             |
+| --------- | ------------ | ------------------------ |
+| `mode`    | `"password"` | `password`、`passphrase` |
+| `count`   | `5`          | number                   |
+| `length`  | `20`         | number                   |
+| `words`   | `6`          | number                   |
+| `lower`   | `true`       | checkbox                 |
+| `upper`   | `true`       | checkbox                 |
+| `digits`  | `true`       | checkbox                 |
+| `symbols` | `true`       | checkbox                 |
+
+## 图片与音视频
+
+### `image-tools` · 图片压缩与转换
+
+**状态**：已实现。**路由**：`/tools/image-tools`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：本地缩放并转换 PNG、JPEG、WebP，比较输出体积。
+- **输入**：本地 PNG、JPEG、WebP、GIF、AVIF 或 BMP。
+- **输出**：PNG、JPEG、WebP 文件及预览和统计。
+- **使用注解与限制**：最多 20 MiB / 3200 万像素，按 width / height 等比缩小、不放大；质量 0.1–1，PNG 通常不受质量参数影响。输出静态帧，不保留原始元数据，JPEG 白底；能力取决于浏览器编码支持。
+- **实现**：[browser.ts](../src/tools/browser.ts)；共用界面与调度见 [ToolPage.tsx](../src/tools/ToolPage.tsx)。
+
+**参数**（模式相关参数在对应模式才生效）：
+
+| 参数键 / 界面名称             | 默认值   | 可选值或类型               |
+| ----------------------------- | -------- | -------------------------- |
+| `format` · 格式               | `"webp"` | `webp`、`jpeg`、`png`      |
+| `width` · 最大宽度（px）      | `"1910"` | 数字，范围见说明与运行校验 |
+| `height` · 最大高度（px）     | `"1080"` | 数字，范围见说明与运行校验 |
+| `quality` · 图片质量（0.1–1） | `"0.8"`  | 数字，范围见说明与运行校验 |
+
+**示例入口**：点击“载入示例”生成本地 PNG，再运行并下载图片。
+
+### `image-batch` · 图片批处理
+
+**状态**：已实现。**路由**：`/tools/image-batch`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：图片批处理。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：最多 50 张本地图片，等比缩小、格式转换、质量调整、水印与打包下载；序号命名。动画只取静态帧，元数据不保留，JPEG 白底。总解码像素最多 6400 万。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键      | 默认值   | 可选值或类型          |
+| ----------- | -------- | --------------------- |
+| `format`    | `"webp"` | `webp`、`jpeg`、`png` |
+| `width`     | `1910`   | number                |
+| `height`    | `1080`   | number                |
+| `quality`   | `0.85`   | number                |
+| `watermark` | `""`     | text                  |
+
+### `image-stitch` · 图片拼接
+
+**状态**：已实现。**路由**：`/tools/image-stitch`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：图片拼接。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：横向、纵向或网格拼图；图片等比适配单元格，可设置间距与背景。输出 PNG，单画布最多 3200 万像素。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键       | 默认值      | 可选值或类型                     |
+| ------------ | ----------- | -------------------------------- |
+| `layout`     | `"grid"`    | `grid`、`vertical`、`horizontal` |
+| `columns`    | `2`         | number                           |
+| `width`      | `480`       | number                           |
+| `height`     | `320`       | number                           |
+| `gap`        | `16`        | number                           |
+| `background` | `"#ffffff"` | text                             |
+
+### `image-palette` · 图片配色提取
+
+**状态**：已实现。**路由**：`/tools/image-palette`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：图片配色提取。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：从本地图片提取量化主色、出现次数和渐变 CSS。采样 100×100，忽略低透明像素；近似色板，不是无损颜色统计。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键  | 默认值 | 可选值或类型 |
+| ------- | ------ | ------------ |
+| `count` | `6`    | number       |
+
+### `image-annotate` · 图片标注
+
+**状态**：已实现。**路由**：`/tools/image-annotate`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：图片标注。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：通过标注 JSON 添加 rect、arrow、text、number 或 blur（像素化），坐标使用原图像素；也可在预览点击定位。最多 100 项。敏感内容应使用完全遮盖，像素化不能保证不可恢复。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+**示例输入**：
+
+```text
+[{"type":"rect","x":40,"y":40,"width":200,"height":100,"color":"#ff3b30"},{"type":"text","x":60,"y":60,"text":"DevKit","color":"#ffffff"}]
+```
+
+### `audio-editor` · 音频裁剪与音量
+
+**状态**：已实现。**路由**：`/tools/audio-editor`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：音频裁剪与音量。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：裁剪起止秒数、调节音量、淡入淡出，输出 16-bit PCM WAV。输入格式依浏览器解码能力；输出最多 10 分钟、双声道、3000 万采样。切页/取消丢弃结果。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键   | 默认值 | 可选值或类型 |
+| -------- | ------ | ------------ |
+| `start`  | `0`    | number       |
+| `end`    | `""`   | text         |
+| `volume` | `1`    | number       |
+| `fade`   | `0`    | number       |
+
+### `video-frames` · 视频截图
+
+**状态**：已实现。**路由**：`/tools/video-frames`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：视频截图。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：输入多个逗号分隔时间点（秒），从本地视频截取 PNG 并打包；最多 30 帧，输出宽度不超过原图。不转换视频格式；解码依浏览器。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键  | 默认值 | 可选值或类型 |
+| ------- | ------ | ------------ |
+| `times` | `"0"`  | text         |
+| `width` | `1280` | number       |
+
+### `ascii-art` · 图片 → ASCII 字符画
+
+**状态**：已实现。**路由**：`/tools/ascii-art`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：图片 → ASCII 字符画。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：本地图片或输入文字按亮度转字符画，宽度 10–200 列；透明处按白色处理。文本可复制下载；中文等宽字符可能影响显示。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键       | 默认值         | 可选值或类型 |
+| ------------ | -------------- | ------------ |
+| `width`      | `80`           | number       |
+| `characters` | `"@%#*+=-:. "` | text         |
+
+### `screenshot-beautify` · 截图美化
+
+**状态**：已实现。**路由**：`/tools/screenshot-beautify`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：截图美化。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：本地截图添加双色渐变背景、圆角、阴影、窗口边框或手机外壳，输出 PNG；不修改截图内容或上传素材。单画布最多 3200 万像素。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键          | 默认值      | 可选值或类型           |
+| --------------- | ----------- | ---------------------- |
+| `padding`       | `60`        | number                 |
+| `radius`        | `16`        | number                 |
+| `phoneFrame`    | `false`     | 布尔值，优先于窗口边框 |
+| `windowFrame`   | `true`      | checkbox               |
+| `background`    | `"#0066cc"` | text                   |
+| `backgroundEnd` | `"#10b981"` | text                   |
+
+## 文件与文档
+
+### `pdf-tools` · PDF 工作台
+
+**状态**：已实现。**路由**：`/tools/pdf-tools`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：PDF 工作台。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：按所选文件顺序合并、提取/重排指定页、逐页拆分、页面转 PNG；页码示例 3,1-2。最多 500 个合并页，选择最多 300 页，图片导出最多 30 页。不绕过密码；渲染使用本地 PDF.js。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键  | 默认值    | 可选值或类型                          |
+| ------- | --------- | ------------------------------------- |
+| `mode`  | `"merge"` | `merge`、`extract`、`split`、`images` |
+| `pages` | `""`      | text                                  |
+| `scale` | `1.5`     | number                                |
+
+### `file-rename` · 批量重命名
+
+**状态**：已实现。**路由**：`/tools/file-rename`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：批量重命名。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：默认仅显示重命名方案；开启导出副本后下载 ZIP，不修改磁盘原文件。支持序号、字面量或正则替换，重复名/非法 Windows 名称拒绝；正则模式在 Worker 中运行，5 秒超时。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键        | 默认值       | 可选值或类型                   |
+| ------------- | ------------ | ------------------------------ |
+| `mode`        | `"sequence"` | `sequence`、`replace`、`regex` |
+| `prefix`      | `"file-"`    | text                           |
+| `start`       | `1`          | number                         |
+| `flags`       | `"g"`        | 文本，允许 g / i / u           |
+| `find`        | `"old"`      | text                           |
+| `replace`     | `"new"`      | text                           |
+| `exportFiles` | `false`      | checkbox                       |
+
+### `file-duplicates` · 重复文件检测
+
+**状态**：已实现。**路由**：`/tools/file-duplicates`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：重复文件检测。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：使用分块 SHA-256 对文件内容分组，标注重复项；不删除文件。最多 50 个、单文件 50 MiB、合计 150 MiB。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+### `file-signature` · 文件真实格式识别
+
+**状态**：已实现。**路由**：`/tools/file-signature`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：文件真实格式识别。
+- **输入**：按页面选择本地文件或编辑文本；点击载入示例可使用内置示例（字体/视频需自行选择文件）。
+- **输出**：预览、文本报告及适用格式的下载；多文件输出打包 ZIP。
+- **使用注解与限制**：读取前 32 字节识别常见 PNG/JPEG/GIF/PDF/ZIP/ICO/GZIP/WebP/WAV 魔数并比较扩展名。ZIP 不能进一步区分 Office 类型；未知不等于不安全，不进行病毒扫描。 通用文件上限：50 个、单个 50 MiB、合计 150 MiB；工具专有限制优先。取消/切页丢弃结果，部分浏览器原生解码不能即时中断。
+- **实现**：[WorkbenchPage.tsx](../src/tools/WorkbenchPage.tsx)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+## 生活与决策
+
+### `split-bill` · 多人分账
+
+**状态**：已实现。**路由**：`/tools/split-bill`。**持久草稿**：禁用；输入和文件仅保留当前页面会话。
+
+- **用途**：多人分账。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：按付款人及参与人均分，金额最多两位小数，余下分币按参与顺序分配。输出余额和转账方案；非零余额人数 ≤12 时搜索最少转账笔数（最多 200 万节点），超过时使用贪心算法。没有支付或汇率功能。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+**示例输入**：
+
+```text
+[{"paidBy":"Ada","amount":120,"for":["Ada","Lin","Grace"]},{"paidBy":"Lin","amount":60,"for":["Ada","Lin"]}]
+```
+
+### `unit-converter` · 通用单位换算
+
+**状态**：已实现。**路由**：`/tools/unit-converter`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：通用单位换算。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：长度、重量、温度、速度、存储容量换算，只允许同类单位；KB 为十进制，KiB 为二进制。结果 12 位有效数字，不是高精度计量工具。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键     | 默认值 | 可选值或类型                                                                                                                    |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `fromUnit` | `"m"`  | `m`、`km`、`cm`、`inch`、`ft`、`kg`、`g`、`lb`、`C`、`F`、`K`、`m/s`、`km/h`、`mph`、`B`、`KB`、`MB`、`GB`、`KiB`、`MiB`、`GiB` |
+| `toUnit`   | `"km"` | `km`、`m`、`cm`、`inch`、`ft`、`kg`、`g`、`lb`、`C`、`F`、`K`、`m/s`、`km/h`、`mph`、`B`、`KB`、`MB`、`GB`、`KiB`、`MiB`、`GiB` |
+
+**示例输入**：
+
+```text
+1000
+```
+
+### `lottery` · 加权抽签
+
+**状态**：已实现。**路由**：`/tools/lottery`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：加权抽签。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：按正整数权重随机抽取，支持不重复；最多 1000 个候选，权重 1–10000。候选可作为 JSON 文本保存；不提供赌博、支付或公平审计服务。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+| 参数键   | 默认值 | 可选值或类型 |
+| -------- | ------ | ------------ |
+| `count`  | `1`    | number       |
+| `unique` | `true` | checkbox     |
+
+**示例输入**：
+
+```text
+[{"name":"A","weight":1},{"name":"B","weight":3},{"name":"C","weight":2}]
+```
+
+### `decision` · 加权决策评分
+
+**状态**：已实现。**路由**：`/tools/decision`。**持久草稿**：用户主动开启后可保存文本与参数。
+
+- **用途**：加权决策评分。
+- **输入**：编辑器中的文本或 JSON；输入格式见下方示例及使用注解。
+- **输出**：可复制及下载的文本结果。
+- **使用注解与限制**：按权重对选项的 0–10 分进行加权平均并排序；权重非负且总和大于零。成本等负向指标需先自行转换成越高越好。 输入上限 5 MiB，运行在可取消的 Worker；拒绝不支持或无法安全表示的输入。
+- **实现**：[everyday.ts](../src/tools/everyday.ts)；注册与参数见 [schema.ts](../src/tools/schema.ts)。
+
+**参数**：
+
+无额外参数。
+
+**示例输入**：
+
+```text
+{"weights":{"cost":3,"quality":7},"options":[{"name":"A","scores":{"cost":8,"quality":6}},{"name":"B","scores":{"cost":5,"quality":9}}]}
 ```

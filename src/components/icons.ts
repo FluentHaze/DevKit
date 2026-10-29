@@ -12,6 +12,9 @@ import {
   LayoutGrid,
   Link2,
   WandSparkles,
+  Images,
+  Files,
+  Coffee,
 } from 'lucide-react';
 export const categoryIcons = {
   data: Braces,
@@ -21,6 +24,9 @@ export const categoryIcons = {
   css: Palette,
   web: Globe2,
   generate: Dices,
+  media: Images,
+  files: Files,
+  life: Coffee,
 };
 export const toolIcon = (id: string, category: string) =>
   id === 'json-formatter'

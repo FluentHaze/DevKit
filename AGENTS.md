@@ -1,10 +1,10 @@
 # DevKit 开发约定
 
-开始前阅读 [README](README.md)、[文档导航](docs/README.md)及当前任务对应文档。当前为 React + TypeScript + Vite + Tailwind CSS 的本地优先工具站，共 7 类、49 个工具；入口以 `src/tools/metadata.json` 为准，实际能力见 [工具手册](docs/tools.md)。
+开始前阅读 [README](README.md)、[文档导航](docs/README.md)及当前任务对应文档。当前为 React + TypeScript + Vite + Tailwind CSS 的本地优先工具站，共 10 类、91 个工具；入口以 `src/tools/metadata.json` 为准，实际能力见 [工具手册](docs/tools.md)。
 
 ## 实施边界
 
-- 保留本地处理、无需登录、zh-CN / en 双语基线；未经用户要求，不引入上传、后端代理、遥测、账户或商业化功能。
+- 默认本地处理；WebSocket 只在用户主动连接后与指定服务器通信。保留无需登录、zh-CN / en 双语基线；未经用户要求，不引入上传、后端代理、遥测、账户或商业化功能。
 - 修改前理解现有组件、类型、配置和调用方；优先复用现有实现，不进行无关重构、依赖升级或覆盖用户改动。
 - 遵循 [代码架构](docs/code-style.md)、[格式](docs/code-format.md)、[设计](docs/design-style.md)、[交互](docs/interaction-style.md)。样式使用 Tailwind 和语义 tokens，不使用 CSS Modules。
 - 转换逻辑与 UI 解耦，工具必须实际可用。禁止执行用户输入、使用不可信 innerHTML 或将敏感内容写入日志、URL、持久存储。
